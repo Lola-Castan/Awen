@@ -5,11 +5,12 @@ namespace App\Entity;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\UserRepository;
+use App\Entity\Embeddable\CreatorInfo;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\ArrayCollection;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -88,9 +89,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
+    #[ORM\Embedded(class: CreatorInfo::class)]
+    private CreatorInfo $creatorInfo;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
+        $this->creatorInfo = new CreatorInfo();
     }
 
     public function getId(): ?int
@@ -323,6 +328,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->isVerified = $isVerified;
 
+        return $this;
+    }
+
+    public function getCreatorInfo(): CreatorInfo
+    {
+        return $this->creatorInfo;
+    }
+
+    public function setCreatorInfo(CreatorInfo $creatorInfo): self
+    {
+        $this->creatorInfo = $creatorInfo;
         return $this;
     }
 }

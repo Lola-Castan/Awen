@@ -57,6 +57,16 @@ class AppFixtures extends Fixture
 
         $creator->addRole($roleUser);
         $creator->addRole($roleCreator);
+
+        $creatorInfo = $creator->getCreatorInfo();
+        $creatorInfo->setDisplayName('Clara C.')
+            ->setInstagramProfile('https://instagram.com/claracraft')
+            ->setFacebookProfile('https://facebook.com/claracraft')
+            ->setPinterestProfile('https://pinterest.com/claracraft')
+            ->setDescription('Créatrice passionnée par le DIY')
+            ->setPracticalInfos('Livraison sous 5 jours ouvrés')
+            ->setCoverImage('cover_clara.jpg');
+
         $manager->persist($creator);
 
         // Admin
