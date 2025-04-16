@@ -4,8 +4,10 @@ namespace App\DataFixtures;
 
 use App\Entity\Role;
 use App\Entity\User;
-use Doctrine\Bundle\FixturesBundle\Fixture;
+use App\Entity\Product;
+use App\Enum\ProductStatus;
 use Doctrine\Persistence\ObjectManager;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class AppFixtures extends Fixture
@@ -82,6 +84,42 @@ class AppFixtures extends Fixture
         $admin->addRole($roleUser);
         $admin->addRole($roleAdmin);
         $manager->persist($admin);
+
+        // Create a product
+        $product1 = new Product();
+        $product1->setName('Product 1')
+            ->setShortDescription('Short description of product 1')
+            ->setLongDescription('Long description for product 1')
+            ->setStock(100)
+            ->setWeight(500)
+            ->setWidth(20)
+            ->setDepth(30)
+            ->setHeight(15)
+            ->setPrice(1999) // Price in cents (19.99 EUR)
+            ->setShowcaseProduct(true)
+            ->setStatus(ProductStatus::Published)
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setCreator($creator);
+
+        $manager->persist($product1);
+
+        // Create another product
+        $product2 = new Product();
+        $product2->setName('Product 2')
+            ->setShortDescription('Short description of product 2')
+            ->setLongDescription('Long description for product 2')
+            ->setStock(50)
+            ->setWeight(700)
+            ->setWidth(15)
+            ->setDepth(25)
+            ->setHeight(20)
+            ->setPrice(2999) // Price in cents (29.99 EUR)
+            ->setShowcaseProduct(false)
+            ->setStatus(ProductStatus::Draft)
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setCreator($creator);
+
+        $manager->persist($product2);
 
         $manager->flush();
     }

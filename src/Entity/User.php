@@ -92,10 +92,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Embedded(class: CreatorInfo::class)]
     private CreatorInfo $creatorInfo;
 
+    /**
+     * @var Collection<int, Product>
+     */
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'creator')]
+    private Collection $products;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
         $this->creatorInfo = new CreatorInfo();
+        $this->products = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -339,6 +346,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatorInfo(CreatorInfo $creatorInfo): self
     {
         $this->creatorInfo = $creatorInfo;
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->setCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getCreator() === $this) {
+                $product->setCreator(null);
+            }
+        }
+
         return $this;
     }
 }
