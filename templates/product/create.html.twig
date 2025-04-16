@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer un produit{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+    <h1>Créer un produit</h1>
+
+    {{ form_errors(productForm) }}
+
+    {{ form_start(productForm) }}
+        {{ form_row(productForm.name) }}
+        {{ form_row(productForm.shortDescription) }}
+        {{ form_row(productForm.longDescription) }}
+        {{ form_row(productForm.stock) }}
+        {{ form_row(productForm.weight) }}
+        {{ form_row(productForm.width) }}
+        {{ form_row(productForm.depth) }}
+        {{ form_row(productForm.height) }}
+        {{ form_row(productForm.price) }}
+        {{ form_row(productForm.showcaseProduct) }}
+        <button type="submit" class="btn">Créer le produit</button>
+    {{ form_end(productForm) }}
+{% endblock %}
