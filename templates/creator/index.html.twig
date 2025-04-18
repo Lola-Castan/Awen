@@ -3,35 +3,33 @@
 {% block title %}Nos Créateurs - Awen{% endblock %}
 
 {% block body %}
-<div class="container my-5">
-    <h1 class="mb-4">Nos créateurs</h1>
+<div class="container">
+    <h1>Nos créateurs</h1>
     
-    <div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="creators-grid">
         {% for creator in creators %}
-            <div class="col">
-                <div class="card h-100">
-                    {% if creator.creatorInfo.coverImage %}
-                        <img src="{{ asset('uploads/images/' ~ creator.creatorInfo.coverImage) }}" class="card-img-top" alt="{{ creator.creatorInfo.displayName }}">
-                    {% else %}
-                        <div class="bg-light card-img-top p-3 text-center" style="height: 150px;">
-                            <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
-                        </div>
-                    {% endif %}
-                    
-                    <div class="card-body">
-                        <h5 class="card-title">{{ creator.creatorInfo.displayName }}</h5>
-                        <p class="card-text small text-muted">{{ creator.products|length }} produit(s)</p>
-                        <p class="card-text">
-                            {{ creator.creatorInfo.description|u.truncate(100, '...') }}
-                        </p>
+            <div class="creator-card">
+                {% if creator.creatorInfo.coverImage %}
+                    <img src="{{ asset('uploads/images/' ~ creator.creatorInfo.coverImage) }}" alt="{{ creator.creatorInfo.displayName }}">
+                {% else %}
+                    <div class="placeholder-image">
+                        <span>Pas d'image</span>
                     </div>
-                    <div class="card-footer bg-white border-top-0">
-                        <a href="{{ path('app_creator_show', {id: creator.id}) }}" class="btn btn-outline-primary btn-sm">Voir le profil</a>
-                    </div>
+                {% endif %}
+                
+                <div class="creator-info">
+                    <h2>{{ creator.creatorInfo.displayName }}</h2>
+                    <p class="product-count">{{ creator.products|length }} produit(s)</p>
+                    <p>
+                        {{ creator.creatorInfo.description|u.truncate(100, '...') }}
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ path('app_creator_show', {id: creator.id}) }}" class="view-profile">Voir le profil</a>
                 </div>
             </div>
         {% else %}
-            <div class="col-12">
+            <div>
                 <p>Aucun créateur n'est disponible pour le moment.</p>
             </div>
         {% endfor %}
