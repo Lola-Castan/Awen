@@ -2,23 +2,170 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Welcome!{% endblock %}</title>
         <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+        
         {% block stylesheets %}
+            <!-- Intégration de Tailwind CSS via CDN -->
+            <script src="https://cdn.tailwindcss.com"></script>
+            <!-- Configuration de base pour Tailwind -->
+            <script>
+                tailwind.config = {
+                    theme: {
+                        extend: {
+                            colors: {
+                                primary: '#4F46E5',
+                                secondary: '#10B981'
+                            }
+                        }
+                    }
+                }
+            </script>
+            <!-- Styles personnalisés supplémentaires -->
+            <style type="text/tailwindcss">
+                @layer components {
+                    .btn-primary {
+                        @apply bg-primary text-white py-2 px-4 rounded hover:bg-opacity-90;
+                    }
+                    .card {
+                        @apply bg-white rounded shadow p-4;
+                    }
+                }
+            </style>
         {% endblock %}
 
         {% block javascripts %}
             {% block importmap %}{{ importmap('app') }}{% endblock %}
         {% endblock %}
     </head>
-    <body>
+    <body class="bg-gray-50 flex flex-col min-h-screen">
+        <!-- Navbar -->
+        <nav class="bg-white shadow-md">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center h-16">
+                    <!-- Logo -->
+                    <a href="{{ path('app_home') }}" class="flex items-center space-x-3">
+                        <span class="font-bold text-2xl text-primary">Awen</span>
+                    </a>
+                    
+                    <!-- Desktop Navigation -->
+                    <div class="hidden md:flex space-x-8">
+                        <a href="{{ path('app_home') }}" class="text-gray-700 hover:text-primary transition-colors">Accueil</a>
+                        <a href="{{ path('app_creators') }}" class="text-gray-700 hover:text-primary transition-colors">Créateurs</a>
+                        <a href="{{ path('app_products') }}" class="text-gray-700 hover:text-primary transition-colors">Produits</a>
+                        <a href="#" class="text-gray-700 hover:text-primary transition-colors">À propos</a>
+                    </div>
+                    
+                    <!-- User Menu & Mobile Menu Button -->
+                    <div class="flex items-center space-x-4">
+                        <!-- User Menu -->
+                        <div class="hidden md:flex items-center space-x-4">
+                            {% if app.user %}
+                                <div class="relative">
+                                    <button id="user-menu-button" type="button" class="flex items-center text-gray-700 hover:text-primary focus:outline-none">
+                                        <span class="mr-2">{{ app.user.firstName }}</span>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
+                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mon profil</a>
+                                        {% if is_granted('ROLE_CREATOR') %}
+                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes produits</a>
+                                        {% endif %}
+                                        <a href="{{ path('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Déconnexion</a>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <a href="{{ path('app_login') }}" class="text-gray-700 hover:text-primary transition-colors">Connexion</a>
+                                <a href="{{ path('app_register') }}" class="btn-primary">Inscription</a>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Mobile Menu Button -->
+                        <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-gray-900 focus:outline-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu -->
+                <div id="mobile-menu" class="md:hidden hidden pb-4">
+                    <a href="{{ path('app_home') }}" class="block py-2 text-gray-700 hover:text-primary">Accueil</a>
+                    <a href="{{ path('app_creators') }}" class="block py-2 text-gray-700 hover:text-primary">Créateurs</a>
+                    <a href="{{ path('app_products') }}" class="block py-2 text-gray-700 hover:text-primary">Produits</a>
+                    <a href="#" class="block py-2 text-gray-700 hover:text-primary">À propos</a>
+                    
+                    {% if app.user %}
+                        <hr class="my-2 border-gray-200">
+                        <a href="#" class="block py-2 text-gray-700 hover:text-primary">Mon profil</a>
+                        {% if is_granted('ROLE_CREATOR') %}
+                            <a href="#" class="block py-2 text-gray-700 hover:text-primary">Mes produits</a>
+                        {% endif %}
+                        <a href="{{ path('logout') }}" class="block py-2 text-gray-700 hover:text-primary">Déconnexion</a>
+                    {% else %}
+                        <hr class="my-2 border-gray-200">
+                        <a href="{{ path('app_login') }}" class="block py-2 text-gray-700 hover:text-primary">Connexion</a>
+                        <a href="{{ path('app_register') }}" class="block py-2 text-gray-700 hover:text-primary">Inscription</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Messages flash avec style Tailwind -->
         {% for label, messages in app.flashes %}
             {% for message in messages %}
-                <div class="alert alert-{{ label }}">
+                <div class="mx-auto max-w-7xl px-4 mt-4 {% if label == 'success' %}bg-green-100 text-green-800{% elseif label == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %} p-4 rounded-md">
                     {{ message }}
                 </div>
             {% endfor %}
         {% endfor %}
-        {% block body %}{% endblock %}
+        
+        <!-- Contenu principal -->
+        <main class="flex-grow">
+            {% block body %}{% endblock %}
+        </main>
+        
+        <!-- Footer -->
+        <footer class="bg-white mt-12 py-8 border-t border-gray-200">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">À propos</h3>
+                        <p class="text-gray-600">Awen est une plateforme dédiée aux créateurs et artisans pour présenter et vendre leurs créations uniques.</p>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Navigation</h3>
+                        <ul class="space-y-2">
+                            <li><a href="{{ path('app_home') }}" class="text-gray-600 hover:text-primary">Accueil</a></li>
+                            <li><a href="{{ path('app_creators') }}" class="text-gray-600 hover:text-primary">Créateurs</a></li>
+                            <li><a href="{{ path('app_products') }}" class="text-gray-600 hover:text-primary">Produits</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-primary">À propos</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Informations</h3>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-primary">Conditions d'utilisation</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-primary">Politique de confidentialité</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-primary">Mentions légales</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Contact</h3>
+                        <ul class="space-y-2">
+                            <li class="text-gray-600">Email: contact@awen.com</li>
+                            <li class="text-gray-600">Téléphone: 01 23 45 67 89</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-gray-200 mt-8 pt-8 text-center text-gray-500">
+                    <p>&copy; {{ "now"|date('Y') }} Awen. Tous droits réservés.</p>
+                </div>
+            </div>
+        </footer>
     </body>
 </html>

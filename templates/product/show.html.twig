@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }} - Awen{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-4">
+        <a href="{{ path('app_products') }}" class="text-primary hover:underline flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Retour aux produits
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 p-6">
+            <!-- Galerie d'images -->
+            <div>
+                {% if product.images|length > 0 %}
+                    <div class="mb-4">
+                        <div id="main-image" class="h-80 overflow-hidden rounded-lg relative transition-all duration-300">
+                            <img src="{{ product.mainImage.path }}" 
+                                alt="{{ product.mainImage.alt }}" 
+                                class="w-full h-full object-cover transition-opacity duration-150">
+                        </div>
+                    </div>
+                    
+                    {% if product.images|length > 1 %}
+                        <div class="grid grid-cols-5 gap-2">
+                            {% for image in product.images %}
+                                <div class="h-16 w-full overflow-hidden rounded cursor-pointer thumbnail-image" data-src="{{ image.path }}" data-alt="{{ image.alt }}">
+                                    <img src="{{ image.path }}" alt="{{ image.alt }}" class="w-full h-full object-cover">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="h-80 bg-gray-100 flex items-center justify-center rounded-lg">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Informations produit -->
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 mb-2">{{ product.name }}</h1>
+                
+                <div class="mb-4">
+                    <p class="text-gray-600">
+                        Par <a href="{{ path('app_creator_show', {id: product.creator.id}) }}" class="text-primary hover:underline">{{ product.creator.creatorInfo.displayName }}</a>
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    {% for category in product.categories %}
+                        <span class="bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full text-sm">
+                            {{ category.name }}
+                        </span>
+                    {% endfor %}
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-gray-600">{{ product.shortDescription }}</p>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="text-2xl font-bold text-gray-800">
+                        {% if product.price %}
+                            {{ (product.price / 100)|format_currency('EUR') }}
+                        {% else %}
+                            Prix sur demande
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="border-t border-gray-200 pt-4 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        {% if product.stock > 0 %}
+                            <div>
+                                <span class="text-sm text-gray-500">Disponibilité</span>
+                                <p class="text-green-600">En stock ({{ product.stock }})</p>
+                            </div>
+                        {% else %}
+                            <div>
+                                <span class="text-sm text-gray-500">Disponibilité</span>
+                                <p class="text-red-600">Rupture de stock</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div>
+                            <span class="text-sm text-gray-500">Dimensions</span>
+                            <p>{{ product.width }} × {{ product.depth }} × {{ product.height }} cm</p>
+                        </div>
+                        
+                        <div>
+                            <span class="text-sm text-gray-500">Poids</span>
+                            <p>{{ product.weight }} g</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex gap-4">
+                    <a href="#" class="flex-1 bg-primary text-white text-center py-3 rounded-md hover:bg-opacity-90 transition-colors">
+                        Ajouter au panier
+                    </a>
+                    <button class="bg-gray-100 p-3 rounded-md hover:bg-gray-200 transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Description détaillée -->
+        <div class="p-6 border-t border-gray-200">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Description détaillée</h2>
+            <div class="prose max-w-none">
+                {{ product.longDescription|nl2br }}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Autres produits du créateur -->
+    <div class="mt-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Autres créations de {{ product.creator.creatorInfo.displayName }}</h2>
+        
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% set otherProducts = 0 %}
+            {% for otherProduct in product.creator.products %}
+                {% if otherProduct.id != product.id and otherProduct.status.value == 'published' and otherProducts < 4 %}
+                    {% set otherProducts = otherProducts + 1 %}
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <div class="h-48 overflow-hidden">
+                            {% if otherProduct.mainImage %}
+                                <img src="{{ otherProduct.mainImage.path }}" 
+                                    alt="{{ otherProduct.mainImage.alt }}"
+                                    class="w-full h-full object-cover">
+                            {% else %}
+                                <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="p-4">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ otherProduct.name }}</h3>
+                            
+                            <p class="text-gray-600 text-sm mb-3">
+                                {{ otherProduct.shortDescription|u.truncate(70, '...') }}
+                            </p>
+                            
+                            <p class="text-lg font-bold text-gray-800 mb-4">
+                                {% if otherProduct.price %}
+                                    {{ (otherProduct.price / 100)|format_currency('EUR') }}
+                                {% else %}
+                                    Prix sur demande
+                                {% endif %}
+                            </p>
+                            
+                            <a href="{{ path('app_product_show', {id: otherProduct.id}) }}" class="block w-full text-center bg-primary text-white py-2 rounded hover:bg-opacity-90 transition-colors">
+                                Voir le produit
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="col-span-full text-center py-8">
+                    <p class="text-gray-500">Aucun autre produit disponible de ce créateur.</p>
+                </div>
+            {% endfor %}
+        </div>
+        
+        {% if otherProducts > 0 %}
+            <div class="text-center mt-8">
+                <a href="{{ path('app_creator_show', {id: product.creator.id}) }}" class="inline-block text-primary hover:underline">
+                    Voir tous les produits de {{ product.creator.creatorInfo.displayName }}
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock %}

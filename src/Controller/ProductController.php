@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Enum\ProductStatus;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,13 +14,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class ProductController extends AbstractController
 {
-    // #[Route('/product', name: 'app_product')]
-    // public function index(): Response
-    // {
-    //     return $this->render('product/index.html.twig', [
-    //         'controller_name' => 'ProductController',
-    //     ]);
-    // }
+    #[Route('/products', name: 'app_products')]
+    public function index(ProductRepository $productRepository): Response
+    {
+        $products = $productRepository->findPublishedProducts();
+        
+        return $this->render('product/index.html.twig', [
+            'products' => $products,
+        ]);
+    }
+    
+    #[Route('/product/{id}', name: 'app_product_show')]
+    public function show(Product $product): Response
+    {
+        // Vérifie si le produit est publié, sinon renvoie une 404
+        if ($product->getStatus() !== ProductStatus::Published) {
+            throw $this->createNotFoundException('Ce produit n\'est pas disponible.');
+        }
+        
+        return $this->render('product/show.html.twig', [
+            'product' => $product,
+        ]);
+    }
 
     #[Route('/product/create', name: 'app_product_create')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
