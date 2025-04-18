@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Product;
+use App\Entity\Category;
 use App\Enum\ProductStatus;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -70,6 +71,28 @@ class AppFixtures extends Fixture
             ->setCoverImage('cover_clara.jpg');
 
         $manager->persist($creator);
+        
+        // Second Creator
+        $creator2 = new User();
+        $creator2->setUsername('jules')
+            ->setEmail('jules@example.com')
+            ->setPassword($this->passwordHasher->hashPassword($creator2, 'password'))
+            ->setFirstName('Jules')
+            ->setLastName('Martin')
+            ->setBirthDate(new \DateTimeImmutable('1992-07-15'))
+            ->setCreatedAt(new \DateTimeImmutable());
+
+        $creator2->addRole($roleUser);
+        $creator2->addRole($roleCreator);
+
+        $creatorInfo2 = $creator2->getCreatorInfo();
+        $creatorInfo2->setDisplayName('Jules Art')
+            ->setInstagramProfile('https://instagram.com/julesart')
+            ->setDescription('Artiste contemporain travaillant principalement avec le bois')
+            ->setPracticalInfos('Ateliers disponibles sur demande')
+            ->setCoverImage('cover_jules.jpg');
+
+        $manager->persist($creator2);
 
         // Admin
         $admin = new User();
@@ -84,12 +107,41 @@ class AppFixtures extends Fixture
         $admin->addRole($roleUser);
         $admin->addRole($roleAdmin);
         $manager->persist($admin);
+        
+        // Création des catégories
+        $categoryDeco = new Category();
+        $categoryDeco->setName('Décoration');
+        $manager->persist($categoryDeco);
+        
+        $categoryBijoux = new Category();
+        $categoryBijoux->setName('Bijoux');
+        $manager->persist($categoryBijoux);
+        
+        $categoryArt = new Category();
+        $categoryArt->setName('Art');
+        $manager->persist($categoryArt);
+        
+        $categoryMaison = new Category();
+        $categoryMaison->setName('Maison');
+        $manager->persist($categoryMaison);
+        
+        $categoryMode = new Category();
+        $categoryMode->setName('Mode');
+        $manager->persist($categoryMode);
+        
+        // Association des catégories aux créateurs
+        $categoryDeco->addCreator($creator);
+        $categoryBijoux->addCreator($creator);
+        $categoryMaison->addCreator($creator);
+        
+        $categoryArt->addCreator($creator2);
+        $categoryDeco->addCreator($creator2);
 
         // Create a product
         $product1 = new Product();
-        $product1->setName('Product 1')
-            ->setShortDescription('Short description of product 1')
-            ->setLongDescription('Long description for product 1')
+        $product1->setName('Vase artisanal')
+            ->setShortDescription('Vase en céramique fait main')
+            ->setLongDescription('Vase en céramique entièrement fait à la main avec des matériaux naturels et locaux. Chaque pièce est unique.')
             ->setStock(100)
             ->setWeight(500)
             ->setWidth(20)
@@ -99,15 +151,17 @@ class AppFixtures extends Fixture
             ->setShowcaseProduct(true)
             ->setStatus(ProductStatus::Published)
             ->setCreatedAt(new \DateTimeImmutable())
-            ->setCreator($creator);
+            ->setCreator($creator)
+            ->addCategory($categoryDeco)
+            ->addCategory($categoryMaison);
 
         $manager->persist($product1);
 
         // Create another product
         $product2 = new Product();
-        $product2->setName('Product 2')
-            ->setShortDescription('Short description of product 2')
-            ->setLongDescription('Long description for product 2')
+        $product2->setName('Collier perles')
+            ->setShortDescription('Collier en perles naturelles')
+            ->setLongDescription('Collier en perles naturelles monté à la main. Ce bijou élégant saura sublimer toutes vos tenues.')
             ->setStock(50)
             ->setWeight(700)
             ->setWidth(15)
@@ -117,9 +171,31 @@ class AppFixtures extends Fixture
             ->setShowcaseProduct(false)
             ->setStatus(ProductStatus::Draft)
             ->setCreatedAt(new \DateTimeImmutable())
-            ->setCreator($creator);
+            ->setCreator($creator)
+            ->addCategory($categoryBijoux)
+            ->addCategory($categoryMode);
 
         $manager->persist($product2);
+        
+        // Product from second creator
+        $product3 = new Product();
+        $product3->setName('Sculpture bois')
+            ->setShortDescription('Sculpture abstraite en bois')
+            ->setLongDescription('Œuvre d\'art unique créée avec du bois de récupération. Cette sculpture apportera une touche originale à votre intérieur.')
+            ->setStock(10)
+            ->setWeight(1200)
+            ->setWidth(40)
+            ->setDepth(30)
+            ->setHeight(50)
+            ->setPrice(9990) // Price in cents (99.90 EUR)
+            ->setShowcaseProduct(true)
+            ->setStatus(ProductStatus::Published)
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setCreator($creator2)
+            ->addCategory($categoryArt)
+            ->addCategory($categoryDeco);
+
+        $manager->persist($product3);
 
         $manager->flush();
     }

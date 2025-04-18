@@ -118,5 +118,14 @@ class CreatorInfo
         $this->coverImage = $coverImage;
         return $this;
     }
+    
+    /**
+     * Détermine si cet utilisateur est un créateur actif
+     * On considère qu'un créateur est actif s'il a défini un nom d'affichage
+     */
+    public function isActive(): bool
+    {
+        return $this->displayName !== null && trim($this->displayName) !== '';
+    }
 }
 

@@ -98,11 +98,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'creator')]
     private Collection $products;
 
+    /**
+     * @var Collection<int, Category>
+     */
+    #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'creators')]
+    private Collection $categories;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
         $this->creatorInfo = new CreatorInfo();
         $this->products = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -377,5 +384,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->addCreator($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            $category->removeCreator($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Vérifie si l'utilisateur est un créateur
+     */
+    public function isCreator(): bool
+    {
+        return $this->creatorInfo->isActive();
     }
 }
