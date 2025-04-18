@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Role;
 use App\Entity\User;
+use App\Entity\Image;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Enum\ProductStatus;
@@ -156,6 +157,23 @@ class AppFixtures extends Fixture
             ->addCategory($categoryMaison);
 
         $manager->persist($product1);
+        
+        // Ajout d'images pour le produit 1
+        $image1 = new Image();
+        $image1->setFilename('vase1.jpg')
+            ->setAlt('Vue principale du vase artisanal')
+            ->setTitle('Vase artisanal en céramique')
+            ->setPosition(0) // Image principale
+            ->setProduct($product1);
+        $manager->persist($image1);
+        
+        $image2 = new Image();
+        $image2->setFilename('vase2.jpg')
+            ->setAlt('Vue de côté du vase artisanal')
+            ->setTitle('Détail du vase')
+            ->setPosition(1)
+            ->setProduct($product1);
+        $manager->persist($image2);
 
         // Create another product
         $product2 = new Product();
@@ -177,6 +195,15 @@ class AppFixtures extends Fixture
 
         $manager->persist($product2);
         
+        // Ajout d'images pour le produit 2
+        $image3 = new Image();
+        $image3->setFilename('collier1.jpg')
+            ->setAlt('Vue principale du collier en perles')
+            ->setTitle('Collier en perles naturelles')
+            ->setPosition(0) // Image principale
+            ->setProduct($product2);
+        $manager->persist($image3);
+        
         // Product from second creator
         $product3 = new Product();
         $product3->setName('Sculpture bois')
@@ -196,6 +223,31 @@ class AppFixtures extends Fixture
             ->addCategory($categoryDeco);
 
         $manager->persist($product3);
+        
+        // Ajout d'images pour le produit 3
+        $image4 = new Image();
+        $image4->setFilename('sculpture1.jpg')
+            ->setAlt('Vue principale de la sculpture en bois')
+            ->setTitle('Sculpture abstraite en bois')
+            ->setPosition(0) // Image principale
+            ->setProduct($product3);
+        $manager->persist($image4);
+        
+        $image5 = new Image();
+        $image5->setFilename('sculpture2.jpg')
+            ->setAlt('Vue de détail de la sculpture')
+            ->setTitle('Détail de la sculpture en bois')
+            ->setPosition(1)
+            ->setProduct($product3);
+        $manager->persist($image5);
+        
+        $image6 = new Image();
+        $image6->setFilename('sculpture3.jpg')
+            ->setAlt('Vue d\'ensemble de la sculpture')
+            ->setTitle('Vue d\'ensemble de la sculpture')
+            ->setPosition(2)
+            ->setProduct($product3);
+        $manager->persist($image6);
 
         $manager->flush();
     }

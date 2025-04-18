@@ -67,9 +67,17 @@ class Product
     #[ORM\JoinTable(name: 'category_product')]
     private Collection $categories;
 
+    /**
+     * @var Collection<int, Image>
+     */
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Image::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[ORM\OrderBy(['position' => 'ASC'])]
+    private Collection $images;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
+        $this->images = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -267,5 +275,55 @@ class Product
         $this->categories->removeElement($category);
 
         return $this;
+    }
+
+    /**
+     * @return Collection<int, Image>
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Image $image): static
+    {
+        if (!$this->images->contains($image)) {
+            $this->images->add($image);
+            $image->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Image $image): static
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getProduct() === $this) {
+                $image->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Récupère l'image principale du produit (position 0 ou première image)
+     */
+    public function getMainImage(): ?Image
+    {
+        if ($this->images->isEmpty()) {
+            return null;
+        }
+
+        // Chercher l'image avec position = 0
+        foreach ($this->images as $image) {
+            if ($image->getPosition() === 0) {
+                return $image;
+            }
+        }
+
+        // Si aucune image n'a position = 0, retourne la première
+        return $this->images->first();
     }
 }
