@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\user;
+use App\Entity\User;
 use App\Entity\Product;
 use App\Enum\ProductStatus;
 use Symfony\Component\Form\AbstractType;
@@ -32,11 +32,6 @@ class ProductType extends AbstractType
                     'Publié' => ProductStatus::Published,
                     'Archivé' => ProductStatus::Archived,
                 ],
-                'choice_label' => fn(ProductStatus $status) => match($status) {
-                    ProductStatus::Draft => 'Brouillon',
-                    ProductStatus::Published => 'Publié',
-                    ProductStatus::Archived => 'Archivé',
-                },
             ])
             // todo : logged in user should be asigned as creator (when not admin)
             ->add('creator', EntityType::class, [
