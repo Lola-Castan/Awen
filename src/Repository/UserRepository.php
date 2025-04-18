@@ -33,6 +33,23 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return User[] Returns an array of active creators
+     */
+    public function findCreators(): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->join('u.roles', 'r')
+            ->where('r.name = :role')
+            ->setParameter('role', 'ROLE_CREATOR')
+            ->andWhere('u.creatorInfo.displayName IS NOT NULL')
+            ->andWhere('u.creatorInfo.displayName != :empty')
+            ->setParameter('empty', '')
+            ->orderBy('u.creatorInfo.displayName', 'ASC');
+
+        return $qb->getQuery()->getResult();
+    }
+
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

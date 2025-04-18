@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nos Créateurs - Awen{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <h1 class="mb-4">Nos créateurs</h1>
+    
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for creator in creators %}
+            <div class="col">
+                <div class="card h-100">
+                    {% if creator.creatorInfo.coverImage %}
+                        <img src="{{ asset('uploads/images/' ~ creator.creatorInfo.coverImage) }}" class="card-img-top" alt="{{ creator.creatorInfo.displayName }}">
+                    {% else %}
+                        <div class="bg-light card-img-top p-3 text-center" style="height: 150px;">
+                            <i class="bi bi-person-circle" style="font-size: 3rem;"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">{{ creator.creatorInfo.displayName }}</h5>
+                        <p class="card-text small text-muted">{{ creator.products|length }} produit(s)</p>
+                        <p class="card-text">
+                            {{ creator.creatorInfo.description|u.truncate(100, '...') }}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <a href="{{ path('app_creator_show', {id: creator.id}) }}" class="btn btn-outline-primary btn-sm">Voir le profil</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-12">
+                <p>Aucun créateur n'est disponible pour le moment.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

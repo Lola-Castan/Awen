@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ creator.creatorInfo.displayName }} - Awen{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+    <!-- En-tête du profil créateur -->
+    <div class="row mb-5">
+        <div class="col-md-4">
+            {% if creator.creatorInfo.coverImage %}
+                <img src="{{ asset('uploads/images/' ~ creator.creatorInfo.coverImage) }}" class="img-fluid rounded" alt="{{ creator.creatorInfo.displayName }}">
+            {% else %}
+                <div class="bg-light rounded p-4 text-center" style="height: 250px;">
+                    <i class="bi bi-person-circle" style="font-size: 5rem;"></i>
+                </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h1>{{ creator.creatorInfo.displayName }}</h1>
+            
+            <p class="my-3">{{ creator.creatorInfo.description }}</p>
+            
+            <div class="mt-3 mb-4">
+                <h5>Catégories</h5>
+                <div>
+                    {% for category in creator.categories %}
+                        <span class="badge bg-primary me-2">{{ category.name }}</span>
+                    {% else %}
+                        <span class="text-muted">Aucune catégorie</span>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Réseaux sociaux et site web -->
+            <div class="d-flex gap-3 mt-4">
+                {% if creator.creatorInfo.website %}
+                    <a href="{{ creator.creatorInfo.website }}" target="_blank" class="text-decoration-none">
+                        <i class="bi bi-globe"></i> Site web
+                    </a>
+                {% endif %}
+                
+                {% if creator.creatorInfo.instagramProfile %}
+                    <a href="{{ creator.creatorInfo.instagramProfile }}" target="_blank" class="text-decoration-none">
+                        <i class="bi bi-instagram"></i> Instagram
+                    </a>
+                {% endif %}
+                
+                {% if creator.creatorInfo.facebookProfile %}
+                    <a href="{{ creator.creatorInfo.facebookProfile }}" target="_blank" class="text-decoration-none">
+                        <i class="bi bi-facebook"></i> Facebook
+                    </a>
+                {% endif %}
+                
+                {% if creator.creatorInfo.pinterestProfile %}
+                    <a href="{{ creator.creatorInfo.pinterestProfile }}" target="_blank" class="text-decoration-none">
+                        <i class="bi bi-pinterest"></i> Pinterest
+                    </a>
+                {% endif %}
+            </div>
+            
+            {% if creator.creatorInfo.practicalInfos %}
+                <div class="mt-4">
+                    <h5>Informations pratiques</h5>
+                    <p>{{ creator.creatorInfo.practicalInfos }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Produits du créateur -->
+    <h2 class="mb-4">Ses créations</h2>
+    
+    <div class="row row-cols-1 row-cols-md-4 g-4">
+        {% for product in creator.products %}
+            {% if product.status.value == 'published' %}
+                <div class="col">
+                    <div class="card h-100">
+                        {% if product.mainImage %}
+                            <img src="{{ product.mainImage.path }}" class="card-img-top" alt="{{ product.mainImage.alt }}">
+                        {% else %}
+                            <div class="bg-light card-img-top p-3 text-center" style="height: 150px;">
+                                <i class="bi bi-card-image" style="font-size: 3rem;"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            
+                            <div class="mb-2">
+                                {% for category in product.categories %}
+                                    <span class="badge bg-secondary me-1">{{ category.name }}</span>
+                                {% endfor %}
+                            </div>
+                            
+                            <p class="card-text small">
+                                {{ product.shortDescription|u.truncate(70, '...') }}
+                            </p>
+                            
+                            <p class="card-text fw-bold">
+                                {% if product.price %}
+                                    {{ (product.price / 100)|format_currency('EUR') }}
+                                {% else %}
+                                    Prix sur demande
+                                {% endif %}
+                            </p>
+                        </div>
+                        <div class="card-footer bg-white border-top-0">
+                            <a href="#" class="btn btn-sm btn-outline-primary">Voir le produit</a>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% else %}
+            <div class="col-12">
+                <p class="text-muted">Ce créateur n'a pas encore de produits publiés.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

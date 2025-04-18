@@ -27,7 +27,6 @@ security:
 
     access_control:
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/creator, roles: ROLE_CREATOR }
         - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
