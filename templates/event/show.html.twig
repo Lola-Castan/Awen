@@ -1,0 +1,194 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ event.title }} | Awen{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-6">
+        <a href="{{ path('app_event_index') }}" class="flex items-center text-blue-600 hover:text-blue-800">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Retour aux événements
+        </a>
+    </div>
+
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <!-- Images de l'événement en slider -->
+        <div class="relative h-80 bg-gray-200">
+            {% if event.images|length > 0 %}
+                <div class="h-full">
+                    <img src="{{ asset('uploads/images/' ~ event.images[0].filename) }}" alt="{{ event.images[0].alt }}" class="w-full h-full object-cover">
+                </div>
+            {% else %}
+                <div class="h-full flex items-center justify-center">
+                    <span class="text-gray-500">Aucune image</span>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="p-8">
+            <h1 class="text-3xl font-bold mb-2">{{ event.title }}</h1>
+            
+            <div class="flex flex-wrap items-center mb-6 text-gray-700">
+                <div class="flex items-center mr-6 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>{{ event.startDateTime|date('d/m/Y à H:i') }}</span>
+                </div>
+                
+                <div class="flex items-center mr-6 mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span>Durée: {{ event.startDateTime|date('U')|date('H:i', false, 'UTC') }} - {{ event.endDateTime|date('H:i') }}</span>
+                </div>
+                
+                <div class="flex items-center mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>{{ event.location }}</span>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">À propos de cet événement</h2>
+                <div class="prose">
+                    <p class="text-gray-700">{{ event.longDescription|nl2br }}</p>
+                </div>
+            </div>
+
+            <!-- Organisateurs -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">Organisé par</h2>
+                <div class="flex flex-wrap">
+                    {% for user in organizers %}
+                        <div class="flex items-center mr-6 mb-3">
+                            {% if user.profilePicture %}
+                                <img src="{{ asset('uploads/profiles/' ~ user.profilePicture) }}" alt="{{ user.firstName }}" class="w-10 h-10 rounded-full mr-3 object-cover">
+                            {% else %}
+                                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center mr-3">
+                                    <span class="text-gray-600 font-medium">{{ user.firstName|first|upper }}{{ user.lastName|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <div>
+                                <p class="font-medium">{{ user.firstName }} {{ user.lastName }}</p>
+                                {% if user.isCreator %}
+                                    <p class="text-xs text-gray-500">Créateur</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600">Aucun organisateur</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Participants -->
+            <div class="mb-8">
+                <h2 class="text-xl font-semibold mb-4">
+                    Participants 
+                    <span class="text-gray-500 font-normal text-base">({{ participantsCount }})</span>
+                </h2>
+                
+                <div class="flex flex-wrap">
+                    {% for user in participants %}
+                        <div class="flex items-center mr-6 mb-3">
+                            {% if user.profilePicture %}
+                                <img src="{{ asset('uploads/profiles/' ~ user.profilePicture) }}" alt="{{ user.firstName }}" class="w-8 h-8 rounded-full mr-2 object-cover">
+                            {% else %}
+                                <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center mr-2">
+                                    <span class="text-gray-600 font-medium text-xs">{{ user.firstName|first|upper }}</span>
+                                </div>
+                            {% endif %}
+                            <span>{{ user.firstName }}</span>
+                        </div>
+                    {% else %}
+                        <p class="text-gray-600">Aucun participant pour l'instant</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-200">
+                {% if app.user %}
+                    {# Bouton Participer #}
+                    <form action="{{ path('app_event_join', {'id': event.id}) }}" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('event_join_' ~ event.id) }}">
+                        <button type="submit" class="py-2 px-6 {% if currentUserStatus == 'participant' %}bg-green-600 hover:bg-green-700{% else %}bg-blue-600 hover:bg-blue-700{% endif %} text-white rounded-md transition-colors duration-300">
+                            {% if currentUserStatus == 'participant' %}
+                                Inscrit ✓
+                            {% else %}
+                                Participer
+                            {% endif %}
+                        </button>
+                    </form>
+                    
+                    {# Bouton Intéressé #}
+                    <form action="{{ path('app_event_interest', {'id': event.id}) }}" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token('event_interest_' ~ event.id) }}">
+                        <button type="submit" class="py-2 px-6 {% if currentUserStatus == 'interested' %}bg-yellow-500 hover:bg-yellow-600 text-white{% else %}bg-white hover:bg-gray-100 text-blue-600 border border-blue-600{% endif %} rounded-md transition-colors duration-300">
+                            {% if currentUserStatus == 'interested' %}
+                                Intéressé(e) ✓
+                            {% else %}
+                                Intéressé(e)
+                            {% endif %}
+                        </button>
+                    </form>
+                    
+                    {# Bouton Partager #}
+                    <button class="py-2 px-6 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-md transition-colors duration-300" onclick="shareEvent()">
+                        Partager
+                    </button>
+                {% else %}
+                    <a href="{{ path('login') }}?redirect={{ path('app_event_show', {'id': event.id}) }}" class="py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300">
+                        Se connecter pour participer
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Galerie d'images -->
+    {% if event.images|length > 1 %}
+    <div class="mt-10">
+        <h2 class="text-xl font-semibold mb-4">Galerie photos</h2>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {% for image in event.images %}
+                <div class="aspect-w-1 aspect-h-1 overflow-hidden rounded-md">
+                    <img src="{{ asset('uploads/images/' ~ image.filename) }}" alt="{{ image.alt }}" class="w-full h-full object-cover hover:opacity-90 transition-opacity cursor-pointer">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function shareEvent() {
+        if (navigator.share) {
+            navigator.share({
+                title: '{{ event.title }}',
+                text: '{{ event.shortDescription }}',
+                url: window.location.href,
+            })
+            .then(() => console.log('Partage réussi'))
+            .catch((error) => console.log('Erreur lors du partage', error));
+        } else {
+            // Copier l'URL dans le presse-papier
+            const dummy = document.createElement('input');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            
+            alert('URL copiée dans le presse-papier');
+        }
+    }
+</script>
+{% endblock %}

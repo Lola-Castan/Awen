@@ -40,15 +40,18 @@ class EventUserRepository extends ServiceEntityRepository
      */
     public function findUsersByEventAndStatus(Event $event, EventUserStatus $status): array
     {
-        return $this->createQueryBuilder('eu')
-            ->select('u')
-            ->join('eu.user', 'u')
-            ->where('eu.event = :event')
-            ->andWhere('eu.status = :status')
-            ->setParameter('event', $event)
-            ->setParameter('status', $status)
-            ->getQuery()
-            ->getResult();
+        $entityManager = $this->getEntityManager();
+        $query = $entityManager->createQuery(
+            'SELECT u
+            FROM App\Entity\User u
+            JOIN App\Entity\EventUser eu WITH eu.user = u
+            WHERE eu.event = :event
+            AND eu.status = :status'
+        )
+        ->setParameter('event', $event)
+        ->setParameter('status', $status);
+
+        return $query->getResult();
     }
 
     /**

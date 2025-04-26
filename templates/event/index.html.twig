@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Événements | Awen{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8 text-center">Événements à venir</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for event in events %}
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                {% if event.images|length > 0 %}
+                    <div class="h-48 overflow-hidden">
+                        <img src="{{ asset('uploads/images/' ~ event.images[0].filename) }}" alt="{{ event.images[0].alt }}" class="w-full h-full object-cover">
+                    </div>
+                {% else %}
+                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                        <span class="text-gray-500">Aucune image</span>
+                    </div>
+                {% endif %}
+                
+                <div class="p-5">
+                    <h2 class="text-xl font-semibold mb-2">{{ event.title }}</h2>
+                    <p class="text-gray-600 mb-4">{{ event.shortDescription }}</p>
+                    
+                    <div class="flex items-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span class="text-sm text-gray-600">{{ event.startDateTime|date('d/m/Y H:i') }}</span>
+                    </div>
+                    
+                    <div class="flex items-center mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <span class="text-sm text-gray-600">{{ event.location }}</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center">
+                            {% set organizers = [] %}
+                            {% for eventUser in event.eventUsers %}
+                                {% if eventUser.isOrganizer %}
+                                    {% set organizers = organizers|merge([eventUser.user]) %}
+                                {% endif %}
+                            {% endfor %}
+                            
+                            <span class="text-sm text-gray-600">
+                                {% if organizers|length > 0 %}
+                                    Par {{ organizers[0].firstName }}
+                                    {% if organizers|length > 1 %}
+                                        et {{ organizers|length - 1 }} autres
+                                    {% endif %}
+                                {% else %}
+                                    Organisateur inconnu
+                                {% endif %}
+                            </span>
+                        </div>
+                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-300">Détails</a>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="col-span-full text-center py-10">
+                <p class="text-lg text-gray-600">Aucun événement trouvé.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
