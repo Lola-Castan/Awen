@@ -1,7 +1,9 @@
 /**
  * Gestion du menu de navigation et du dropdown utilisateur
  */
-document.addEventListener('DOMContentLoaded', function() {
+
+// Fonction d'initialisation du menu
+function initializeMenu() {
     // Menu mobile toggle
     const mobileMenuButton = document.getElementById('mobile-menu-button');
     const mobileMenu = document.getElementById('mobile-menu');
@@ -87,4 +89,18 @@ document.addEventListener('DOMContentLoaded', function() {
         userMenuButton.setAttribute('aria-haspopup', 'true');
         userMenuButton.setAttribute('aria-expanded', 'false');
     }
-});
+}
+
+// Essayer d'initialiser les menus immédiatement si le DOM est déjà chargé
+if (document.readyState === 'loading') {
+    // Si le DOM n'est pas encore chargé, attendre l'événement DOMContentLoaded
+    document.addEventListener('DOMContentLoaded', initializeMenu);
+} else {
+    // Si le DOM est déjà chargé, initialiser tout de suite
+    initializeMenu();
+}
+
+// Réinitialiser après les transitions de page Turbo (si Turbo est utilisé)
+if (window.Turbo) {
+    document.addEventListener('turbo:load', initializeMenu);
+}

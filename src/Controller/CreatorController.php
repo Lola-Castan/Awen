@@ -4,14 +4,14 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class CreatorController extends AbstractController
 {
-    #[Route('/creators', name: 'app_creators')]
+    #[Route('/creators', name: 'creators')]
     public function index(UserRepository $userRepository): Response
     {
         // Récupérer tous les utilisateurs qui sont des créateurs actifs
@@ -22,7 +22,7 @@ class CreatorController extends AbstractController
         ]);
     }
     
-    #[Route('/creator/{id}', name: 'app_creator_show')]
+    #[Route('/creator/{id}', name: 'creator_show')]
     public function show(User $user): Response
     {
         // Vérifier si l'utilisateur est bien un créateur

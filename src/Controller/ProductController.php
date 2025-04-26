@@ -14,7 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 final class ProductController extends AbstractController
 {
-    #[Route('/products', name: 'app_products')]
+    #[Route('/products', name: 'products')]
     public function index(ProductRepository $productRepository): Response
     {
         $products = $productRepository->findPublishedProducts();
@@ -24,7 +24,7 @@ final class ProductController extends AbstractController
         ]);
     }
     
-    #[Route('/product/{id}', name: 'app_product_show')]
+    #[Route('/product/{id}', name: 'product_show')]
     public function show(Product $product): Response
     {
         // Vérifie si le produit est publié, sinon renvoie une 404
@@ -37,7 +37,7 @@ final class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/product/create', name: 'app_product_create')]
+    #[Route('/product/create', name: 'product_create')]
     public function create(Request $request, EntityManagerInterface $entityManager): Response
     {
         $product = new Product();

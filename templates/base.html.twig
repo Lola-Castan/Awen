@@ -36,7 +36,7 @@
         {% endblock %}
 
         {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            {% block importmap %}{{ importmap('app', { defer: false }) }}{% endblock %}
         {% endblock %}
     </head>
     <body class="bg-gray-50 flex flex-col min-h-screen">
@@ -45,15 +45,15 @@
             <div class="container mx-auto px-4">
                 <div class="flex justify-between items-center h-16">
                     <!-- Logo -->
-                    <a href="{{ path('app_home') }}" class="flex items-center space-x-3">
+                    <a href="{{ path('home') }}" class="flex items-center space-x-3">
                         <span class="font-bold text-2xl text-primary">Awen</span>
                     </a>
                     
                     <!-- Desktop Navigation -->
                     <div class="hidden md:flex space-x-8">
-                        <a href="{{ path('app_home') }}" class="text-gray-700 hover:text-primary transition-colors">Accueil</a>
-                        <a href="{{ path('app_creators') }}" class="text-gray-700 hover:text-primary transition-colors">Créateurs</a>
-                        <a href="{{ path('app_products') }}" class="text-gray-700 hover:text-primary transition-colors">Produits</a>
+                        <a href="{{ path('home') }}" class="text-gray-700 hover:text-primary transition-colors">Accueil</a>
+                        <a href="{{ path('creators') }}" class="text-gray-700 hover:text-primary transition-colors">Créateurs</a>
+                        <a href="{{ path('products') }}" class="text-gray-700 hover:text-primary transition-colors">Produits</a>
                         <a href="#" class="text-gray-700 hover:text-primary transition-colors">À propos</a>
                     </div>
                     
@@ -78,8 +78,8 @@
                                     </div>
                                 </div>
                             {% else %}
-                                <a href="{{ path('app_login') }}" class="text-gray-700 hover:text-primary transition-colors">Connexion</a>
-                                <a href="{{ path('app_register') }}" class="btn-primary">Inscription</a>
+                                <a href="{{ path('login') }}" class="text-gray-700 hover:text-primary transition-colors">Connexion</a>
+                                <a href="{{ path('register') }}" class="btn-primary">Inscription</a>
                             {% endif %}
                         </div>
                         
@@ -94,9 +94,9 @@
                 
                 <!-- Mobile Menu -->
                 <div id="mobile-menu" class="md:hidden hidden pb-4">
-                    <a href="{{ path('app_home') }}" class="block py-2 text-gray-700 hover:text-primary">Accueil</a>
-                    <a href="{{ path('app_creators') }}" class="block py-2 text-gray-700 hover:text-primary">Créateurs</a>
-                    <a href="{{ path('app_products') }}" class="block py-2 text-gray-700 hover:text-primary">Produits</a>
+                    <a href="{{ path('home') }}" class="block py-2 text-gray-700 hover:text-primary">Accueil</a>
+                    <a href="{{ path('creators') }}" class="block py-2 text-gray-700 hover:text-primary">Créateurs</a>
+                    <a href="{{ path('products') }}" class="block py-2 text-gray-700 hover:text-primary">Produits</a>
                     <a href="#" class="block py-2 text-gray-700 hover:text-primary">À propos</a>
                     
                     {% if app.user %}
@@ -108,8 +108,8 @@
                         <a href="{{ path('logout') }}" class="block py-2 text-gray-700 hover:text-primary">Déconnexion</a>
                     {% else %}
                         <hr class="my-2 border-gray-200">
-                        <a href="{{ path('app_login') }}" class="block py-2 text-gray-700 hover:text-primary">Connexion</a>
-                        <a href="{{ path('app_register') }}" class="block py-2 text-gray-700 hover:text-primary">Inscription</a>
+                        <a href="{{ path('login') }}" class="block py-2 text-gray-700 hover:text-primary">Connexion</a>
+                        <a href="{{ path('register') }}" class="block py-2 text-gray-700 hover:text-primary">Inscription</a>
                     {% endif %}
                 </div>
             </div>
@@ -140,9 +140,9 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-800 mb-4">Navigation</h3>
                         <ul class="space-y-2">
-                            <li><a href="{{ path('app_home') }}" class="text-gray-600 hover:text-primary">Accueil</a></li>
-                            <li><a href="{{ path('app_creators') }}" class="text-gray-600 hover:text-primary">Créateurs</a></li>
-                            <li><a href="{{ path('app_products') }}" class="text-gray-600 hover:text-primary">Produits</a></li>
+                            <li><a href="{{ path('home') }}" class="text-gray-600 hover:text-primary">Accueil</a></li>
+                            <li><a href="{{ path('creators') }}" class="text-gray-600 hover:text-primary">Créateurs</a></li>
+                            <li><a href="{{ path('products') }}" class="text-gray-600 hover:text-primary">Produits</a></li>
                             <li><a href="#" class="text-gray-600 hover:text-primary">À propos</a></li>
                         </ul>
                     </div>
