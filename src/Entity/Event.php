@@ -2,12 +2,13 @@
 
 namespace App\Entity;
 
+use App\Enum\EventStatus;
 use App\Enum\EventUserStatus;
-use App\Repository\EventRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\EventRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: EventRepository::class)]
 class Event
@@ -44,10 +45,20 @@ class Event
     #[ORM\OneToMany(mappedBy: 'event', targetEntity: EventUser::class, orphanRemoval: true, cascade: ["persist"])]
     private Collection $eventUsers;
 
+    #[ORM\Column(type: Types::STRING, enumType: EventStatus::class)]
+    private EventStatus $status = EventStatus::Draft;
+    
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $updatedAt = null;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->eventUsers = new ArrayCollection();
+        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -63,6 +74,7 @@ class Event
     public function setTitle(string $title): static
     {
         $this->title = $title;
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -75,6 +87,7 @@ class Event
     public function setShortDescription(?string $shortDescription): static
     {
         $this->shortDescription = $shortDescription;
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -87,6 +100,7 @@ class Event
     public function setLongDescription(string $longDescription): static
     {
         $this->longDescription = $longDescription;
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -99,6 +113,7 @@ class Event
     public function setLocation(?string $location): static
     {
         $this->location = $location;
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -111,6 +126,7 @@ class Event
     public function setStartDateTime(\DateTimeImmutable $startDateTime): static
     {
         $this->startDateTime = $startDateTime;
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -123,6 +139,44 @@ class Event
     public function setEndDateTime(\DateTimeImmutable $endDateTime): static
     {
         $this->endDateTime = $endDateTime;
+        $this->setUpdatedAt(new \DateTimeImmutable());
+
+        return $this;
+    }
+
+    public function getStatus(): EventStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(EventStatus $status): static
+    {
+        $this->status = $status;
+        $this->setUpdatedAt(new \DateTimeImmutable());
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTimeImmutable
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(?\DateTimeImmutable $updatedAt): static
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }
@@ -141,6 +195,7 @@ class Event
             $this->images->add($image);
             $image->addEvent($this);
         }
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -150,6 +205,7 @@ class Event
         if ($this->images->removeElement($image)) {
             $image->removeEvent($this);
         }
+        $this->setUpdatedAt(new \DateTimeImmutable());
 
         return $this;
     }
@@ -182,6 +238,14 @@ class Event
         }
 
         return $this;
+    }
+
+    /**
+     * Vérifie si l'événement est visible pour le public
+     */
+    public function isVisible(): bool
+    {
+        return $this->status === EventStatus::Published;
     }
 
     /**

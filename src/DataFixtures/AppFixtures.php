@@ -9,6 +9,7 @@ use App\Entity\Event;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Enum\ProductStatus;
+use App\Enum\EventStatus;
 use App\Enum\EventUserStatus;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -289,6 +290,7 @@ class AppFixtures extends Fixture
             ->setLocation('Boutique Awen, 15 rue des Artisans, Paris')
             ->setStartDateTime(new \DateTimeImmutable('+7 days 14:00:00'))
             ->setEndDateTime(new \DateTimeImmutable('+7 days 17:00:00'))
+            ->setStatus(EventStatus::Published) // Événement publié
             ->addImage($image7)
             ->addImage($image3);
             
@@ -302,6 +304,7 @@ class AppFixtures extends Fixture
             ->setLocation('Galerie Moderna, 8 avenue des Arts, Lyon')
             ->setStartDateTime(new \DateTimeImmutable('+14 days 18:00:00'))
             ->setEndDateTime(new \DateTimeImmutable('+21 days 20:00:00'))
+            ->setStatus(EventStatus::Cancelled) // Événement annulé
             ->addImage($image8)
             ->addImage($image4)
             ->addImage($image5);
@@ -316,38 +319,76 @@ class AppFixtures extends Fixture
             ->setLocation('Place du marché, Nantes')
             ->setStartDateTime(new \DateTimeImmutable('+30 days 10:00:00'))
             ->setEndDateTime(new \DateTimeImmutable('+30 days 18:00:00'))
+            ->setStatus(EventStatus::Published) // Événement publié
             ->addImage($image9);
             
         $manager->persist($event3);
+        
+        // Événement 4: Atelier en cours de préparation
+        $event4 = new Event();
+        $event4->setTitle('Atelier de décoration durable')
+            ->setShortDescription('Créez des décorations écologiques pour votre intérieur')
+            ->setLongDescription('Dans cet atelier, vous apprendrez à créer des décorations pour votre maison à partir de matériaux recyclés et durables. Une façon créative de donner une seconde vie à vos objets du quotidien tout en décorant votre intérieur avec style.')
+            ->setLocation('MakerSpace, 25 rue de l\'Innovation, Bordeaux')
+            ->setStartDateTime(new \DateTimeImmutable('+45 days 15:00:00'))
+            ->setEndDateTime(new \DateTimeImmutable('+45 days 18:30:00'))
+            ->setStatus(EventStatus::Draft) // Événement en brouillon
+            ->addImage($image1);
+            
+        $manager->persist($event4);
+        
+        // Événement 5: Conférence terminée
+        $event5 = new Event();
+        $event5->setTitle('Conférence sur l\'artisanat local')
+            ->setShortDescription('Échanges autour de l\'importance de l\'artisanat dans l\'économie locale')
+            ->setLongDescription('Une conférence passionnante sur la place de l\'artisanat dans notre économie locale, avec des témoignages de créateurs et d\'experts du secteur. Un moment d\'échange et de partage autour de valeurs communes.')
+            ->setLocation('Centre culturel, Toulouse')
+            ->setStartDateTime(new \DateTimeImmutable('-15 days 10:00:00'))
+            ->setEndDateTime(new \DateTimeImmutable('-15 days 12:30:00'))
+            ->setStatus(EventStatus::Archived) // Événement archivé
+            ->addImage($image8);
+            
+        $manager->persist($event5);
         
         // Gestion des relations Event-User via l'entité EventUser
         
         // Clara organise l'atelier de création de bijoux
         $event1->addUserWithStatus($creator, EventUserStatus::ORGANIZER);
         
-        // Jules organise l'exposition d'art contemporain
+        // Jules organise l'exposition d'art contemporain (annulée)
         $event2->addUserWithStatus($creator2, EventUserStatus::ORGANIZER);
         
         // Les deux créateurs organisent le marché des créateurs
         $event3->addUserWithStatus($creator, EventUserStatus::ORGANIZER);
         $event3->addUserWithStatus($creator2, EventUserStatus::ORGANIZER);
         
+        // Clara organise l'atelier de décoration durable (en brouillon)
+        $event4->addUserWithStatus($creator, EventUserStatus::ORGANIZER);
+        
+        // Jules organisait la conférence (archivée)
+        $event5->addUserWithStatus($creator2, EventUserStatus::ORGANIZER);
+        
         // L'utilisateur John est intéressé par l'atelier de création
         $event1->addUserWithStatus($user, EventUserStatus::INTERESTED);
         
-        // John participe à l'exposition d'art
+        // John participe à l'exposition d'art (même si elle est annulée)
         $event2->addUserWithStatus($user, EventUserStatus::PARTICIPANT);
         
         // L'admin est invitée à tous les événements
         $event1->addUserWithStatus($admin, EventUserStatus::INVITED);
         $event2->addUserWithStatus($admin, EventUserStatus::INVITED);
         $event3->addUserWithStatus($admin, EventUserStatus::INVITED);
+        $event4->addUserWithStatus($admin, EventUserStatus::INVITED);
+        $event5->addUserWithStatus($admin, EventUserStatus::PARTICIPANT); // A participé à l'événement archivé
         
         // Jules est intéressé par l'atelier de Clara
         $event1->addUserWithStatus($creator2, EventUserStatus::INTERESTED);
         
         // Clara participe à l'exposition de Jules
         $event2->addUserWithStatus($creator, EventUserStatus::PARTICIPANT);
+        
+        // John a participé à la conférence archivée
+        $event5->addUserWithStatus($user, EventUserStatus::PARTICIPANT);
 
         $manager->flush();
     }

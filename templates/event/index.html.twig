@@ -8,19 +8,34 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for event in events %}
-            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300 {% if event.status.value == 'cancelled' %}border-2 border-red-500{% endif %}">
                 {% if event.images|length > 0 %}
-                    <div class="h-48 overflow-hidden">
-                        <img src="{{ asset('uploads/images/' ~ event.images[0].filename) }}" alt="{{ event.images[0].alt }}" class="w-full h-full object-cover">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="{{ asset('uploads/images/' ~ event.images[0].filename) }}" alt="{{ event.images[0].alt }}" class="w-full h-full object-cover {% if event.status.value == 'cancelled' %}opacity-60{% endif %}">
+                        {% if event.status.value == 'cancelled' %}
+                            <div class="absolute inset-0 flex justify-center items-center">
+                                <span class="bg-red-600 text-white px-4 py-1 rounded-md font-bold transform rotate-12">ANNULÉ</span>
+                            </div>
+                        {% endif %}
                     </div>
                 {% else %}
-                    <div class="h-48 bg-gray-200 flex items-center justify-center">
+                    <div class="h-48 bg-gray-200 flex items-center justify-center relative">
                         <span class="text-gray-500">Aucune image</span>
+                        {% if event.status.value == 'cancelled' %}
+                            <div class="absolute inset-0 flex justify-center items-center">
+                                <span class="bg-red-600 text-white px-4 py-1 rounded-md font-bold transform rotate-12">ANNULÉ</span>
+                            </div>
+                        {% endif %}
                     </div>
                 {% endif %}
                 
                 <div class="p-5">
-                    <h2 class="text-xl font-semibold mb-2">{{ event.title }}</h2>
+                    <h2 class="text-xl font-semibold mb-2 flex items-center">
+                        {{ event.title }}
+                        {% if event.status.value == 'cancelled' %}
+                            <span class="ml-2 text-xs bg-red-100 text-red-800 px-2 py-1 rounded">Annulé</span>
+                        {% endif %}
+                    </h2>
                     <p class="text-gray-600 mb-4">{{ event.shortDescription }}</p>
                     
                     <div class="flex items-center mb-4">
@@ -58,7 +73,13 @@
                                 {% endif %}
                             </span>
                         </div>
-                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white rounded transition-colors duration-300">Détails</a>
+                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="py-2 px-4 {% if event.status.value == 'cancelled' %}bg-gray-500 hover:bg-gray-600{% else %}bg-blue-600 hover:bg-blue-700{% endif %} text-white rounded transition-colors duration-300">
+                            {% if event.status.value == 'cancelled' %}
+                                Détails (annulé)
+                            {% else %}
+                                Détails
+                            {% endif %}
+                        </a>
                     </div>
                 </div>
             </div>

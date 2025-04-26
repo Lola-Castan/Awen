@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Entity\EventUser;
+use App\Enum\EventStatus;
 use App\Enum\EventUserStatus;
 use App\Repository\EventRepository;
 use App\Repository\EventUserRepository;
@@ -20,8 +21,11 @@ class EventController extends AbstractController
     #[Route('/', name: 'app_event_index', methods: ['GET'])]
     public function index(EventRepository $eventRepository): Response
     {
+        // Récupérer uniquement les événements publiés et annulés
+        $events = $eventRepository->findByStatuses([EventStatus::Published, EventStatus::Cancelled]);
+        
         return $this->render('event/index.html.twig', [
-            'events' => $eventRepository->findAll(),
+            'events' => $events,
         ]);
     }
 

@@ -13,22 +13,35 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="bg-white rounded-lg shadow-md overflow-hidden {% if event.status.value == 'cancelled' %}border-2 border-red-500{% endif %}">
         <!-- Images de l'événement en slider -->
         <div class="relative h-80 bg-gray-200">
             {% if event.images|length > 0 %}
                 <div class="h-full">
-                    <img src="{{ asset('uploads/images/' ~ event.images[0].filename) }}" alt="{{ event.images[0].alt }}" class="w-full h-full object-cover">
+                    <img src="{{ asset('uploads/images/' ~ event.images[0].filename) }}" alt="{{ event.images[0].alt }}" class="w-full h-full object-cover {% if event.status.value == 'cancelled' %}opacity-60{% endif %}">
                 </div>
             {% else %}
                 <div class="h-full flex items-center justify-center">
                     <span class="text-gray-500">Aucune image</span>
                 </div>
             {% endif %}
+
+            {% if event.status.value == 'cancelled' %}
+                <div class="absolute inset-0 flex justify-center items-center">
+                    <div class="bg-red-600 text-white px-8 py-3 rounded-md font-bold text-2xl transform rotate-12 shadow-lg">
+                        ÉVÉNEMENT ANNULÉ
+                    </div>
+                </div>
+            {% endif %}
         </div>
 
         <div class="p-8">
-            <h1 class="text-3xl font-bold mb-2">{{ event.title }}</h1>
+            <div class="flex flex-wrap items-center mb-4">
+                <h1 class="text-3xl font-bold mr-3">{{ event.title }}</h1>
+                {% if event.status.value == 'cancelled' %}
+                    <span class="bg-red-100 text-red-800 px-3 py-1 rounded font-medium text-sm">Annulé</span>
+                {% endif %}
+            </div>
             
             <div class="flex flex-wrap items-center mb-6 text-gray-700">
                 <div class="flex items-center mr-6 mb-2">
@@ -61,6 +74,13 @@
                     <p class="text-gray-700">{{ event.longDescription|nl2br }}</p>
                 </div>
             </div>
+
+            {% if event.status.value == 'cancelled' %}
+                <div class="mb-8 p-4 bg-red-50 border border-red-200 rounded-md">
+                    <h3 class="font-medium text-red-800">Cet événement a été annulé</h3>
+                    <p class="text-red-700 mt-1">Il n'est plus possible de s'inscrire ou de marquer son intérêt.</p>
+                </div>
+            {% endif %}
 
             <!-- Organisateurs -->
             <div class="mb-8">
@@ -115,7 +135,7 @@
 
             <!-- Actions -->
             <div class="flex flex-wrap gap-4 pt-4 border-t border-gray-200">
-                {% if app.user %}
+                {% if app.user and event.status.value != 'cancelled' %}
                     {# Bouton Participer #}
                     <form action="{{ path('app_event_join', {'id': event.id}) }}" method="post">
                         <input type="hidden" name="_token" value="{{ csrf_token('event_join_' ~ event.id) }}">
@@ -139,16 +159,20 @@
                             {% endif %}
                         </button>
                     </form>
-                    
-                    {# Bouton Partager #}
-                    <button class="py-2 px-6 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-md transition-colors duration-300" onclick="shareEvent()">
-                        Partager
-                    </button>
-                {% else %}
+                {% elseif event.status.value == 'cancelled' %}
+                    <div class="py-2 px-6 bg-gray-300 text-gray-600 rounded-md cursor-not-allowed">
+                        Événement annulé
+                    </div>
+                {% elseif not app.user %}
                     <a href="{{ path('login') }}?redirect={{ path('app_event_show', {'id': event.id}) }}" class="py-2 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-md transition-colors duration-300">
                         Se connecter pour participer
                     </a>
                 {% endif %}
+                
+                {# Bouton Partager (toujours disponible) #}
+                <button class="py-2 px-6 bg-white hover:bg-gray-100 text-gray-700 border border-gray-300 rounded-md transition-colors duration-300" onclick="shareEvent()">
+                    Partager
+                </button>
             </div>
         </div>
     </div>
