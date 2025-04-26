@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\EventUser;
 use App\Enum\EventStatus;
 use App\Enum\EventUserStatus;
 use Doctrine\DBAL\Types\Types;
@@ -54,10 +55,17 @@ class Event
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    /**
+     * @var Collection<int, EventCategory>
+     */
+    #[ORM\ManyToMany(targetEntity: EventCategory::class, mappedBy: 'events')]
+    private Collection $eventCategories;
+    
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->eventUsers = new ArrayCollection();
+        $this->eventCategories = new ArrayCollection();
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -385,5 +393,34 @@ class Event
         
         // Si la relation n'existe pas encore, la créer
         return $this->addUserWithStatus($user, $status);
+    }
+
+    /**
+     * @return Collection<int, EventCategory>
+     */
+    public function getEventCategories(): Collection
+    {
+        return $this->eventCategories;
+    }
+
+    public function addEventCategory(EventCategory $eventCategory): static
+    {
+        if (!$this->eventCategories->contains($eventCategory)) {
+            $this->eventCategories->add($eventCategory);
+            $eventCategory->addEvent($this);
+            $this->setUpdatedAt(new \DateTimeImmutable());
+        }
+
+        return $this;
+    }
+
+    public function removeEventCategory(EventCategory $eventCategory): static
+    {
+        if ($this->eventCategories->removeElement($eventCategory)) {
+            $eventCategory->removeEvent($this);
+        }
+        $this->setUpdatedAt(new \DateTimeImmutable());
+        
+        return $this;
     }
 }

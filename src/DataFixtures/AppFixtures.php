@@ -8,6 +8,7 @@ use App\Entity\Image;
 use App\Entity\Event;
 use App\Entity\Product;
 use App\Entity\Category;
+use App\Entity\EventCategory;
 use App\Enum\ProductStatus;
 use App\Enum\EventStatus;
 use App\Enum\EventUserStatus;
@@ -140,6 +141,32 @@ class AppFixtures extends Fixture
         
         $categoryArt->addCreator($creator2);
         $categoryDeco->addCreator($creator2);
+        
+        // Création des catégories d'événements
+        $eventCategoryAtelier = new EventCategory();
+        $eventCategoryAtelier->setName('Atelier');
+        $eventCategoryAtelier->setDescription('Ateliers pratiques et participatifs');
+        $manager->persist($eventCategoryAtelier);
+        
+        $eventCategoryExposition = new EventCategory();
+        $eventCategoryExposition->setName('Exposition');
+        $eventCategoryExposition->setDescription('Expositions artistiques et culturelles');
+        $manager->persist($eventCategoryExposition);
+        
+        $eventCategoryMarche = new EventCategory();
+        $eventCategoryMarche->setName('Marché');
+        $eventCategoryMarche->setDescription('Marchés de créateurs et ventes éphémères');
+        $manager->persist($eventCategoryMarche);
+        
+        $eventCategoryConference = new EventCategory();
+        $eventCategoryConference->setName('Conférence');
+        $eventCategoryConference->setDescription('Conférences, tables rondes et discussions');
+        $manager->persist($eventCategoryConference);
+        
+        $eventCategoryFormation = new EventCategory();
+        $eventCategoryFormation->setName('Formation');
+        $eventCategoryFormation->setDescription('Formations et cours techniques');
+        $manager->persist($eventCategoryFormation);
         
         // Création des images (indépendantes des produits)
         $images = [];
@@ -292,7 +319,9 @@ class AppFixtures extends Fixture
             ->setEndDateTime(new \DateTimeImmutable('+7 days 17:00:00'))
             ->setStatus(EventStatus::Published) // Événement publié
             ->addImage($image7)
-            ->addImage($image3);
+            ->addImage($image3)
+            ->addEventCategory($eventCategoryAtelier)
+            ->addEventCategory($eventCategoryFormation);
             
         $manager->persist($event1);
         
@@ -307,7 +336,8 @@ class AppFixtures extends Fixture
             ->setStatus(EventStatus::Cancelled) // Événement annulé
             ->addImage($image8)
             ->addImage($image4)
-            ->addImage($image5);
+            ->addImage($image5)
+            ->addEventCategory($eventCategoryExposition);
             
         $manager->persist($event2);
         
@@ -320,7 +350,8 @@ class AppFixtures extends Fixture
             ->setStartDateTime(new \DateTimeImmutable('+30 days 10:00:00'))
             ->setEndDateTime(new \DateTimeImmutable('+30 days 18:00:00'))
             ->setStatus(EventStatus::Published) // Événement publié
-            ->addImage($image9);
+            ->addImage($image9)
+            ->addEventCategory($eventCategoryMarche);
             
         $manager->persist($event3);
         
@@ -333,7 +364,9 @@ class AppFixtures extends Fixture
             ->setStartDateTime(new \DateTimeImmutable('+45 days 15:00:00'))
             ->setEndDateTime(new \DateTimeImmutable('+45 days 18:30:00'))
             ->setStatus(EventStatus::Draft) // Événement en brouillon
-            ->addImage($image1);
+            ->addImage($image1)
+            ->addEventCategory($eventCategoryAtelier)
+            ->addEventCategory($eventCategoryFormation);
             
         $manager->persist($event4);
         
@@ -346,7 +379,8 @@ class AppFixtures extends Fixture
             ->setStartDateTime(new \DateTimeImmutable('-15 days 10:00:00'))
             ->setEndDateTime(new \DateTimeImmutable('-15 days 12:30:00'))
             ->setStatus(EventStatus::Archived) // Événement archivé
-            ->addImage($image8);
+            ->addImage($image8)
+            ->addEventCategory($eventCategoryConference);
             
         $manager->persist($event5);
         
