@@ -70,7 +70,8 @@ class Product
     /**
      * @var Collection<int, Image>
      */
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: Image::class, orphanRemoval: true, cascade: ['persist', 'remove'])]
+    #[ORM\ManyToMany(targetEntity: Image::class, inversedBy: 'products', cascade: ["persist"])]
+    #[ORM\JoinTable(name: 'product_image')]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $images;
 
@@ -289,7 +290,7 @@ class Product
     {
         if (!$this->images->contains($image)) {
             $this->images->add($image);
-            $image->setProduct($this);
+            $image->addProduct($this);
         }
 
         return $this;
@@ -298,10 +299,7 @@ class Product
     public function removeImage(Image $image): static
     {
         if ($this->images->removeElement($image)) {
-            // set the owning side to null (unless already changed)
-            if ($image->getProduct() === $this) {
-                $image->setProduct(null);
-            }
+            $image->removeProduct($this);
         }
 
         return $this;

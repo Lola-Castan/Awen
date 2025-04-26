@@ -104,12 +104,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\ManyToMany(targetEntity: Category::class, mappedBy: 'creators')]
     private Collection $categories;
 
+    /**
+     * @var Collection<int, EventUser>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: EventUser::class, orphanRemoval: true, cascade: ["persist"])]
+    private Collection $eventUsers;
+
     public function __construct()
     {
         $this->roles = new ArrayCollection();
         $this->creatorInfo = new CreatorInfo();
         $this->products = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->eventUsers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -419,5 +426,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function isCreator(): bool
     {
         return $this->creatorInfo->isActive();
+    }
+
+    /**
+     * @return Collection<int, EventUser>
+     */
+    public function getEventUsers(): Collection
+    {
+        return $this->eventUsers;
+    }
+
+    public function addEventUser(EventUser $eventUser): static
+    {
+        if (!$this->eventUsers->contains($eventUser)) {
+            $this->eventUsers->add($eventUser);
+            $eventUser->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEventUser(EventUser $eventUser): static
+    {
+        if ($this->eventUsers->removeElement($eventUser)) {
+            // set the owning side to null (unless already changed)
+            if ($eventUser->getUser() === $this) {
+                $eventUser->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Méthodes utilitaires pour les événements
+     */
+    public function getOrganizedEvents(): Collection
+    {
+        return $this->eventUsers
+            ->filter(fn (EventUser $eventUser) => $eventUser->isOrganizer())
+            ->map(fn (EventUser $eventUser) => $eventUser->getEvent());
+    }
+
+    public function getParticipatedEvents(): Collection
+    {
+        return $this->eventUsers
+            ->filter(fn (EventUser $eventUser) => $eventUser->isParticipant())
+            ->map(fn (EventUser $eventUser) => $eventUser->getEvent());
+    }
+
+    public function getInterestedEvents(): Collection
+    {
+        return $this->eventUsers
+            ->filter(fn (EventUser $eventUser) => $eventUser->isInterested())
+            ->map(fn (EventUser $eventUser) => $eventUser->getEvent());
     }
 }

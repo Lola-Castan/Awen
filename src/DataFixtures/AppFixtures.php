@@ -5,9 +5,11 @@ namespace App\DataFixtures;
 use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Image;
+use App\Entity\Event;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Enum\ProductStatus;
+use App\Enum\EventUserStatus;
 use Doctrine\Persistence\ObjectManager;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -137,8 +139,81 @@ class AppFixtures extends Fixture
         
         $categoryArt->addCreator($creator2);
         $categoryDeco->addCreator($creator2);
+        
+        // Création des images (indépendantes des produits)
+        $images = [];
+        
+        $image1 = new Image();
+        $image1->setFilename('vase1.jpg')
+            ->setAlt('Vue principale du vase artisanal')
+            ->setTitle('Vase artisanal en céramique')
+            ->setPosition(0);
+        $manager->persist($image1);
+        $images[] = $image1;
+        
+        $image2 = new Image();
+        $image2->setFilename('vase2.jpg')
+            ->setAlt('Vue de côté du vase artisanal')
+            ->setTitle('Détail du vase')
+            ->setPosition(1);
+        $manager->persist($image2);
+        $images[] = $image2;
+        
+        $image3 = new Image();
+        $image3->setFilename('collier1.jpg')
+            ->setAlt('Vue principale du collier en perles')
+            ->setTitle('Collier en perles naturelles')
+            ->setPosition(0);
+        $manager->persist($image3);
+        $images[] = $image3;
+        
+        $image4 = new Image();
+        $image4->setFilename('sculpture1.jpg')
+            ->setAlt('Vue principale de la sculpture en bois')
+            ->setTitle('Sculpture abstraite en bois')
+            ->setPosition(0);
+        $manager->persist($image4);
+        $images[] = $image4;
+        
+        $image5 = new Image();
+        $image5->setFilename('sculpture2.jpg')
+            ->setAlt('Vue de détail de la sculpture')
+            ->setTitle('Détail de la sculpture en bois')
+            ->setPosition(1);
+        $manager->persist($image5);
+        $images[] = $image5;
+        
+        $image6 = new Image();
+        $image6->setFilename('sculpture3.jpg')
+            ->setAlt("Vue d'ensemble de la sculpture")
+            ->setTitle("Vue d'ensemble de la sculpture")
+            ->setPosition(2);
+        $manager->persist($image6);
+        $images[] = $image6;
+        
+        // Images pour les événements
+        $image7 = new Image();
+        $image7->setFilename('atelier1.jpg')
+            ->setAlt("Photo de l'atelier de création de bijoux")
+            ->setTitle("Atelier création de bijoux");
+        $manager->persist($image7);
+        $images[] = $image7;
+        
+        $image8 = new Image();
+        $image8->setFilename('expo1.jpg')
+            ->setAlt("Photo de l'exposition d'art contemporain")
+            ->setTitle("Exposition d'art contemporain");
+        $manager->persist($image8);
+        $images[] = $image8;
+        
+        $image9 = new Image();
+        $image9->setFilename('marche1.jpg')
+            ->setAlt("Photo du marché des créateurs")
+            ->setTitle("Marché des créateurs");
+        $manager->persist($image9);
+        $images[] = $image9;
 
-        // Create a product
+        // Create a product with ManyToMany relation to images
         $product1 = new Product();
         $product1->setName('Vase artisanal')
             ->setShortDescription('Vase en céramique fait main')
@@ -154,27 +229,12 @@ class AppFixtures extends Fixture
             ->setCreatedAt(new \DateTimeImmutable())
             ->setCreator($creator)
             ->addCategory($categoryDeco)
-            ->addCategory($categoryMaison);
+            ->addCategory($categoryMaison)
+            ->addImage($image1)
+            ->addImage($image2);
 
         $manager->persist($product1);
         
-        // Ajout d'images pour le produit 1
-        $image1 = new Image();
-        $image1->setFilename('vase1.jpg')
-            ->setAlt('Vue principale du vase artisanal')
-            ->setTitle('Vase artisanal en céramique')
-            ->setPosition(0) // Image principale
-            ->setProduct($product1);
-        $manager->persist($image1);
-        
-        $image2 = new Image();
-        $image2->setFilename('vase2.jpg')
-            ->setAlt('Vue de côté du vase artisanal')
-            ->setTitle('Détail du vase')
-            ->setPosition(1)
-            ->setProduct($product1);
-        $manager->persist($image2);
-
         // Create another product
         $product2 = new Product();
         $product2->setName('Collier perles')
@@ -191,18 +251,10 @@ class AppFixtures extends Fixture
             ->setCreatedAt(new \DateTimeImmutable())
             ->setCreator($creator)
             ->addCategory($categoryBijoux)
-            ->addCategory($categoryMode);
+            ->addCategory($categoryMode)
+            ->addImage($image3);
 
         $manager->persist($product2);
-        
-        // Ajout d'images pour le produit 2
-        $image3 = new Image();
-        $image3->setFilename('collier1.jpg')
-            ->setAlt('Vue principale du collier en perles')
-            ->setTitle('Collier en perles naturelles')
-            ->setPosition(0) // Image principale
-            ->setProduct($product2);
-        $manager->persist($image3);
         
         // Product from second creator
         $product3 = new Product();
@@ -220,34 +272,82 @@ class AppFixtures extends Fixture
             ->setCreatedAt(new \DateTimeImmutable())
             ->setCreator($creator2)
             ->addCategory($categoryArt)
-            ->addCategory($categoryDeco);
+            ->addCategory($categoryDeco)
+            ->addImage($image4)
+            ->addImage($image5)
+            ->addImage($image6);
 
         $manager->persist($product3);
         
-        // Ajout d'images pour le produit 3
-        $image4 = new Image();
-        $image4->setFilename('sculpture1.jpg')
-            ->setAlt('Vue principale de la sculpture en bois')
-            ->setTitle('Sculpture abstraite en bois')
-            ->setPosition(0) // Image principale
-            ->setProduct($product3);
-        $manager->persist($image4);
+        // Création des événements
         
-        $image5 = new Image();
-        $image5->setFilename('sculpture2.jpg')
-            ->setAlt('Vue de détail de la sculpture')
-            ->setTitle('Détail de la sculpture en bois')
-            ->setPosition(1)
-            ->setProduct($product3);
-        $manager->persist($image5);
+        // Événement 1: Atelier de création de bijoux
+        $event1 = new Event();
+        $event1->setTitle('Atelier de création de bijoux')
+            ->setShortDescription('Apprenez à créer vos propres bijoux en perles naturelles')
+            ->setLongDescription('Rejoignez-nous pour un atelier pratique où vous apprendrez à créer vos propres bijoux en perles naturelles. Tous les matériaux sont fournis et vous repartirez avec votre création. Cet atelier est adapté à tous les niveaux, aucune expérience préalable n\'est requise.')
+            ->setLocation('Boutique Awen, 15 rue des Artisans, Paris')
+            ->setStartDateTime(new \DateTimeImmutable('+7 days 14:00:00'))
+            ->setEndDateTime(new \DateTimeImmutable('+7 days 17:00:00'))
+            ->addImage($image7)
+            ->addImage($image3);
+            
+        $manager->persist($event1);
         
-        $image6 = new Image();
-        $image6->setFilename('sculpture3.jpg')
-            ->setAlt('Vue d\'ensemble de la sculpture')
-            ->setTitle('Vue d\'ensemble de la sculpture')
-            ->setPosition(2)
-            ->setProduct($product3);
-        $manager->persist($image6);
+        // Événement 2: Exposition d'art contemporain
+        $event2 = new Event();
+        $event2->setTitle('Exposition d\'art contemporain')
+            ->setShortDescription('Découvrez les nouvelles œuvres de Jules Martin')
+            ->setLongDescription('Une exposition exceptionnelle présentant les dernières créations de Jules Martin. Venez découvrir ses sculptures en bois et échanger avec l\'artiste sur son processus créatif. Un verre de bienvenue sera offert.')
+            ->setLocation('Galerie Moderna, 8 avenue des Arts, Lyon')
+            ->setStartDateTime(new \DateTimeImmutable('+14 days 18:00:00'))
+            ->setEndDateTime(new \DateTimeImmutable('+21 days 20:00:00'))
+            ->addImage($image8)
+            ->addImage($image4)
+            ->addImage($image5);
+            
+        $manager->persist($event2);
+        
+        // Événement 3: Marché des créateurs
+        $event3 = new Event();
+        $event3->setTitle('Marché des créateurs')
+            ->setShortDescription('Rencontrez les créateurs locaux et découvrez leurs créations uniques')
+            ->setLongDescription('Le marché des créateurs est l\'occasion idéale pour découvrir les talents locaux et leurs créations artisanales uniques. Bijoux, décorations, accessoires de mode, art... il y en a pour tous les goûts ! Venez nombreux soutenir l\'artisanat local.')
+            ->setLocation('Place du marché, Nantes')
+            ->setStartDateTime(new \DateTimeImmutable('+30 days 10:00:00'))
+            ->setEndDateTime(new \DateTimeImmutable('+30 days 18:00:00'))
+            ->addImage($image9);
+            
+        $manager->persist($event3);
+        
+        // Gestion des relations Event-User via l'entité EventUser
+        
+        // Clara organise l'atelier de création de bijoux
+        $event1->addUserWithStatus($creator, EventUserStatus::ORGANIZER);
+        
+        // Jules organise l'exposition d'art contemporain
+        $event2->addUserWithStatus($creator2, EventUserStatus::ORGANIZER);
+        
+        // Les deux créateurs organisent le marché des créateurs
+        $event3->addUserWithStatus($creator, EventUserStatus::ORGANIZER);
+        $event3->addUserWithStatus($creator2, EventUserStatus::ORGANIZER);
+        
+        // L'utilisateur John est intéressé par l'atelier de création
+        $event1->addUserWithStatus($user, EventUserStatus::INTERESTED);
+        
+        // John participe à l'exposition d'art
+        $event2->addUserWithStatus($user, EventUserStatus::PARTICIPANT);
+        
+        // L'admin est invitée à tous les événements
+        $event1->addUserWithStatus($admin, EventUserStatus::INVITED);
+        $event2->addUserWithStatus($admin, EventUserStatus::INVITED);
+        $event3->addUserWithStatus($admin, EventUserStatus::INVITED);
+        
+        // Jules est intéressé par l'atelier de Clara
+        $event1->addUserWithStatus($creator2, EventUserStatus::INTERESTED);
+        
+        // Clara participe à l'exposition de Jules
+        $event2->addUserWithStatus($creator, EventUserStatus::PARTICIPANT);
 
         $manager->flush();
     }
