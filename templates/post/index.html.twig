@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if author is defined %}Posts de {{ author.username }}{% else %}Tous les posts{% endif %}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">
+            {% if author is defined %}
+                Posts de <span class="text-indigo-600">{{ author.username }}</span>
+            {% else %}
+                Tous les posts
+            {% endif %}
+        </h1>
+        <p class="text-gray-600 mt-2">
+            {% if author is defined %}
+                Découvrez les publications de {{ author.firstName }} {{ author.lastName }}
+            {% else %}
+                Découvrez les dernières publications de notre communauté
+            {% endif %}
+        </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for post in posts %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:-translate-y-1">
+                <a href="{{ path('app_post_show', {'id': post.id}) }}" class="block">
+                    {% if post.images|length > 0 %}
+                        {% set image = post.mainImage %}
+                        <div class="h-48 overflow-hidden">
+                            <img src="{{ asset(image.path) }}" alt="{{ image.alt }}" 
+                                class="w-full h-full object-cover transition-transform duration-300 hover:scale-105">
+                        </div>
+                    {% else %}
+                        <div class="h-48 bg-gray-200 flex items-center justify-center">
+                            <span class="text-gray-500">Pas d'image</span>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="p-4">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-2">{{ post.title }}</h2>
+                        <p class="text-gray-600 line-clamp-3 mb-4">{{ post.content|striptags|slice(0, 150) }}{% if post.content|length > 150 %}...{% endif %}</p>
+                        
+                        <div class="flex items-center justify-between text-sm text-gray-500">
+                            <div class="flex items-center">
+                                {% if post.author.profilePicture %}
+                                    <img src="{{ asset('uploads/images/' ~ post.author.profilePicture) }}" 
+                                        alt="{{ post.author.username }}" 
+                                        class="w-8 h-8 rounded-full mr-2">
+                                {% else %}
+                                    <div class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center mr-2">
+                                        {{ post.author.firstName|first|upper }}{{ post.author.lastName|first|upper }}
+                                    </div>
+                                {% endif %}
+                                <a href="{{ path('app_post_by_author', {'id': post.author.id}) }}" 
+                                   class="hover:text-indigo-600 transition-colors">
+                                    {{ post.author.username }}
+                                </a>
+                            </div>
+                            <span>{{ post.createdAt|date('d M Y') }}</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% else %}
+            <div class="col-span-full py-16 text-center bg-white rounded-lg shadow">
+                <p class="text-gray-500 text-xl">Aucun post trouvé.</p>
+                <p class="mt-2 text-gray-400">Revenez bientôt pour découvrir de nouvelles publications.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

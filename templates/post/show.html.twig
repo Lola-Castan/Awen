@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <a href="{{ path('app_post_index') }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Retour aux posts
+            </a>
+        </div>
+
+        <article class="bg-white rounded-lg shadow-md overflow-hidden">
+            {% if post.images|length > 0 %}
+                <div class="h-80 overflow-hidden">
+                    {% set image = post.mainImage %}
+                    <img src="{{ asset(image.path) }}" alt="{{ image.alt }}" 
+                        class="w-full h-full object-cover">
+                </div>
+            {% endif %}
+
+            <div class="p-6">
+                <h1 class="text-3xl font-bold text-gray-800 mb-4">{{ post.title }}</h1>
+                
+                <div class="flex items-center mb-8">
+                    <div class="flex items-center">
+                        {% if post.author.profilePicture %}
+                            <img src="{{ asset('uploads/images/' ~ post.author.profilePicture) }}" 
+                                alt="{{ post.author.username }}" 
+                                class="w-10 h-10 rounded-full mr-3">
+                        {% else %}
+                            <div class="w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center mr-3">
+                                {{ post.author.firstName|first|upper }}{{ post.author.lastName|first|upper }}
+                            </div>
+                        {% endif %}
+                        <div>
+                            <a href="{{ path('app_post_by_author', {'id': post.author.id}) }}" 
+                               class="text-indigo-600 hover:text-indigo-800 font-medium">
+                                {{ post.author.username }}
+                            </a>
+                            <div class="text-sm text-gray-500">
+                                Publié le {{ post.createdAt|date('d/m/Y à H:i') }}
+                                {% if post.updatedAt %}
+                                    <span class="text-xs">(Modifié le {{ post.updatedAt|date('d/m/Y') }})</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prose max-w-none">
+                    {% if post.content|length > 0 %}
+                        {% set paragraphs = post.content|split('\n\n') %}
+                        {% for paragraph in paragraphs %}
+                            {% if paragraph|trim|length > 0 %}
+                                <p class="mb-4">{{ paragraph|nl2br }}</p>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+
+                {% if post.images|length > 1 %}
+                    <div class="mt-8">
+                        <h2 class="text-xl font-semibold text-gray-800 mb-4">Galerie d'images</h2>
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                            {% for image in post.images %}
+                                <div class="h-40 overflow-hidden rounded-lg">
+                                    <img src="{{ asset(image.path) }}" alt="{{ image.alt }}" 
+                                         class="w-full h-full object-cover transition-transform duration-300 hover:scale-110 cursor-pointer">
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </article>
+
+        <div class="mt-8">
+            <h3 class="text-xl font-semibold text-gray-800 mb-4">Autres posts de {{ post.author.username }}</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% set count = 0 %}
+                {% for otherPost in post.author.posts %}
+                    {% if otherPost.id != post.id and otherPost.isPublished and count < 2 %}
+                        {% set count = count + 1 %}
+                        <a href="{{ path('app_post_show', {'id': otherPost.id}) }}" 
+                           class="flex items-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                            {% if otherPost.images|length > 0 %}
+                                <div class="w-20 h-20 overflow-hidden rounded mr-4 flex-shrink-0">
+                                    <img src="{{ asset(otherPost.mainImage.path) }}" alt="{{ otherPost.title }}" 
+                                         class="w-full h-full object-cover">
+                                </div>
+                            {% endif %}
+                            <div>
+                                <h4 class="font-medium text-gray-800">{{ otherPost.title }}</h4>
+                                <p class="text-sm text-gray-500">{{ otherPost.createdAt|date('d M Y') }}</p>
+                            </div>
+                        </a>
+                    {% endif %}
+                {% else %}
+                    <p class="text-gray-500 col-span-2">Pas d'autres posts de cet auteur.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

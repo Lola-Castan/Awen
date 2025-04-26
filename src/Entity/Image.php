@@ -37,11 +37,15 @@ class Image
     #[ORM\ManyToMany(targetEntity: Event::class, mappedBy: 'images')]
     private Collection $events;
 
+    #[ORM\ManyToMany(targetEntity: Post::class, mappedBy: 'images')]
+    private Collection $posts;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
         $this->events = new ArrayCollection();
         $this->products = new ArrayCollection();
+        $this->posts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -166,6 +170,33 @@ class Image
     {
         if ($this->events->removeElement($event)) {
             $event->removeImage($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Post>
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    public function addPost(Post $post): static
+    {
+        if (!$this->posts->contains($post)) {
+            $this->posts->add($post);
+            $post->addImage($this);
+        }
+
+        return $this;
+    }
+
+    public function removePost(Post $post): static
+    {
+        if ($this->posts->removeElement($post)) {
+            $post->removeImage($this);
         }
 
         return $this;

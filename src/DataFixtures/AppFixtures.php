@@ -6,6 +6,7 @@ use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Image;
 use App\Entity\Event;
+use App\Entity\Post;
 use App\Entity\Product;
 use App\Entity\Category;
 use App\Entity\EventCategory;
@@ -423,6 +424,109 @@ class AppFixtures extends Fixture
         
         // John a participé à la conférence archivée
         $event5->addUserWithStatus($user, EventUserStatus::PARTICIPANT);
+
+        // Création des posts
+        
+        // Posts du créateur Clara
+        $post1 = new Post();
+        $post1->setTitle('Comment j\'ai commencé la céramique')
+            ->setContent('Découvrez mon parcours dans le monde de la céramique, des premiers essais aux créations actuelles. La céramique est un art ancestral qui demande patience et précision.
+
+J\'ai commencé il y a maintenant 5 ans, après avoir suivi un atelier d\'initiation qui m\'a complètement passionnée. Depuis, je n\'ai cessé d\'explorer différentes techniques et de perfectionner mon style.
+
+Dans cet article, je partage avec vous les étapes clés de mon parcours, les difficultés rencontrées et comment j\'ai réussi à développer ma propre ligne de produits en céramique.')
+            ->setAuthor($creator)
+            ->setCreatedAt(new \DateTimeImmutable('-30 days'))
+            ->setIsPublished(true)
+            ->addImage($image1)
+            ->addImage($image2);
+        $manager->persist($post1);
+        
+        $post2 = new Post();
+        $post2->setTitle('Les tendances de la bijouterie artisanale')
+            ->setContent('Les bijoux artisanaux connaissent un véritable renouveau ces dernières années. De plus en plus de personnes se tournent vers des pièces uniques, fabriquées à la main avec des matériaux de qualité.
+
+Parmi les tendances actuelles, on observe un retour aux matériaux naturels comme le bois, la pierre et les perles organiques. Les créations minimalistes et épurées sont également très recherchées, tout comme les bijoux inspirés de formes géométriques.
+
+Dans ce post, je vous présente les tendances qui marqueront cette année et comment les intégrer à votre style personnel.')
+            ->setAuthor($creator)
+            ->setCreatedAt(new \DateTimeImmutable('-15 days'))
+            ->setIsPublished(true)
+            ->addImage($image3);
+        $manager->persist($post2);
+        
+        $post3 = new Post();
+        $post3->setTitle('À venir : nouvelle collection été')
+            ->setContent('Je travaille actuellement sur ma nouvelle collection pour l\'été. Des couleurs vives, des matières légères et des designs rafraîchissants seront à l\'honneur.
+
+Cette collection s\'inspire de mes voyages récents et de mon amour pour la nature. Vous y trouverez des pièces uniques qui apporteront une touche d\'originalité à votre intérieur ou à votre tenue.
+
+Restez connectés pour découvrir les premiers aperçus dans les semaines à venir !')
+            ->setAuthor($creator)
+            ->setCreatedAt(new \DateTimeImmutable('-5 days'))
+            ->setIsPublished(false) // Brouillon
+            ->addImage($image2);
+        $manager->persist($post3);
+        
+        // Posts du créateur Jules
+        $post4 = new Post();
+        $post4->setTitle('L\'art du travail du bois')
+            ->setContent('Le bois est un matériau noble qui offre d\'infinies possibilités créatives. Dans cet article, je vous partage ma passion pour la sculpture sur bois et les techniques que j\'ai développées au fil des années.
+
+Chaque essence de bois possède ses propres caractéristiques : dureté, grain, couleur, veinage... Apprendre à les connaître et à les respecter est essentiel pour créer des pièces qui mettent en valeur la beauté naturelle du matériau.
+
+Je vous invite à découvrir mon approche de la sculpture, entre tradition et modernité, et comment je donne vie à mes idées à travers ce médium ancestral.')
+            ->setAuthor($creator2)
+            ->setCreatedAt(new \DateTimeImmutable('-45 days'))
+            ->setIsPublished(true)
+            ->addImage($image4)
+            ->addImage($image5)
+            ->addImage($image6);
+        $manager->persist($post4);
+        
+        $post5 = new Post();
+        $post5->setTitle('Retour sur mon exposition à Lyon')
+            ->setContent('La semaine dernière s\'est achevée mon exposition à la Galerie Moderna de Lyon. Ce fut une expérience incroyable de pouvoir partager mon travail avec un public aussi enthousiaste et curieux.
+
+Pendant dix jours, j\'ai eu l\'opportunité de présenter mes dernières créations et d\'échanger avec les visiteurs sur mon processus créatif. Ces conversations enrichissantes m\'ont apporté de nouvelles perspectives et idées pour mes futurs projets.
+
+Je tiens à remercier tous ceux qui ont fait le déplacement et qui ont contribué à faire de cet événement un succès. Votre soutien est précieux et me motive à continuer à créer et à innover.')
+            ->setAuthor($creator2)
+            ->setCreatedAt(new \DateTimeImmutable('-8 days'))
+            ->setIsPublished(true)
+            ->addImage($image8);
+        $manager->persist($post5);
+        
+        // Post de l'admin
+        $post6 = new Post();
+        $post6->setTitle('Bienvenue sur la plateforme Awen')
+            ->setContent('Chers artisans et amateurs d\'art,
+
+Nous sommes ravis de vous accueillir sur Awen, la nouvelle plateforme dédiée à l\'artisanat et à la création artistique locale. Notre ambition est de créer un espace où créateurs et passionnés peuvent se rencontrer, échanger et partager leur amour pour le fait-main.
+
+Sur Awen, vous pourrez découvrir des créations uniques, suivre vos artisans préférés, participer à des événements exclusifs et même commander directement auprès des créateurs.
+
+Nous vous invitons à explorer le site, à créer votre profil et à commencer cette aventure avec nous. N\'hésitez pas à nous faire part de vos suggestions pour améliorer l\'expérience Awen.')
+            ->setAuthor($admin)
+            ->setCreatedAt(new \DateTimeImmutable('-60 days'))
+            ->setIsPublished(true)
+            ->addImage($image9);
+        $manager->persist($post6);
+        
+        // Post utilisateur standard
+        $post7 = new Post();
+        $post7->setTitle('Mon expérience à l\'atelier de bijoux')
+            ->setContent('Le week-end dernier, j\'ai eu la chance de participer à l\'atelier de création de bijoux animé par Clara. Ce fut une expérience enrichissante que je souhaite partager avec vous.
+
+En trois heures, j\'ai pu apprendre les bases de la création de bijoux en perles naturelles et repartir avec un magnifique bracelet personnalisé. Clara est une formatrice patiente et pédagogue qui sait transmettre sa passion.
+
+L\'ambiance était conviviale et le petit groupe a permis d\'avoir un suivi personnalisé. Je recommande vivement cet atelier à tous ceux qui souhaitent s\'initier à la création de bijoux ou simplement passer un moment créatif et agréable.')
+            ->setAuthor($user)
+            ->setCreatedAt(new \DateTimeImmutable('-3 days'))
+            ->setIsPublished(true)
+            ->addImage($image3)
+            ->addImage($image7);
+        $manager->persist($post7);
 
         $manager->flush();
     }
