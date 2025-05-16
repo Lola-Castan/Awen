@@ -16,4 +16,5 @@ RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/public|g' /e
 RUN chown -R www-data:www-data /var/www/html/var /var/www/html/public
 
 EXPOSE 80
+
 CMD ["apache2-foreground"]
