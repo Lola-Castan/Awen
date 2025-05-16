@@ -1,0 +1,30 @@
+services:
+  php:
+    image: uruknara/awen:latest
+    ports:
+      - "8080:80"
+    volumes:
+      - /home/awen/web:/var/www/html
+    environment:
+      # Remplacez par vos identifiants Mailtrap
+      MAILER_DSN: "smtp://49bde0defd777d:e0d3123c173af3@sandbox.smtp.mailtrap.io:2525"
+      DATABASE_URL: "mysql://app:!ChangeMe!@database:3306/app?serverVersion=8.0"
+    depends_on:
+      - database
+
+  database:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: app
+      MYSQL_USER: app
+      MYSQL_PASSWORD: "!ChangeMe!"
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/awen/mysql:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
