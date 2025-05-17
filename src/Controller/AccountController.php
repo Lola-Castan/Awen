@@ -2,13 +2,13 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Form\AccountType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AccountController extends AbstractController
 {
@@ -18,10 +18,14 @@ class AccountController extends AbstractController
         EntityManagerInterface $entityManager,
         \Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface $passwordHasher
     ): Response {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
             throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
         }
+        
+        // Mettre à jour la date de modification
+        $user->setUpdatedAt(new \DateTimeImmutable());
 
         $form = $this->createForm(AccountType::class, $user);
         $form->handleRequest($request);

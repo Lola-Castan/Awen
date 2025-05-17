@@ -19,10 +19,14 @@ class ProfileController extends AbstractController
     #[Route('/edit', name: 'profile_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
+        /** @var User $user */
         $user = $this->getUser();
         if (!$user) {
-            return $this->redirectToRoute('login');
+            throw $this->createAccessDeniedException('Vous devez être connecté pour accéder à cette page.');
         }
+        
+        // Mettre à jour la date de modification
+        $user->setUpdatedAt(new \DateTimeImmutable());
 
         $form = $this->createForm(ProfileType::class, $user);
         $form->handleRequest($request);
