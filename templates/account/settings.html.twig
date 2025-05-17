@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paramètres du compte{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <!-- Navigation des paramètres -->
+        <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+            <div class="border-b border-gray-200">
+                <nav class="flex -mb-px">
+                    <a href="{{ path('account_settings') }}" 
+                       class="px-6 py-4 text-indigo-600 border-b-2 border-indigo-600 font-medium text-sm">
+                        Paramètres du compte
+                    </a>
+                    <a href="{{ path('profile_edit') }}" 
+                       class="px-6 py-4 text-gray-500 hover:text-gray-700 font-medium text-sm">
+                        Profil public
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6">Paramètres du compte</h1>
+
+                {% for flash_message in app.flashes('success') %}
+                    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+                        <span class="block sm:inline">{{ flash_message }}</span>
+                    </div>
+                {% endfor %}
+
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}                    <!-- Email et Mot de passe -->
+                    <div class="mb-8">
+                        <h3 class="font-semibold text-gray-700 border-b pb-2 mb-4">Identifiants de connexion</h3>
+                        <div class="space-y-6">
+                            <!-- Mot de passe actuel -->
+                            <div>
+                                {{ form_label(form.currentPassword, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.currentPassword, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.currentPassword, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                                <p class="text-sm text-gray-500 mt-1">Requis pour valider les modifications</p>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="pt-4 border-t">
+                                {{ form_label(form.email, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.email, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.email, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+
+                            <!-- Mot de passe -->
+                            <div class="pt-4 border-t">
+                                <h4 class="text-sm font-medium text-gray-700 mb-4">Changer le mot de passe</h4>
+                                
+                                <!-- Nouveau mot de passe -->
+                                <div class="mb-4">
+                                    {{ form_label(form.plainPassword.first, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                    {{ form_widget(form.plainPassword.first, {
+                                        'attr': {
+                                            'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500',
+                                            'autocomplete': 'new-password'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.plainPassword.first, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                                </div>
+
+                                <!-- Confirmation du mot de passe -->
+                                <div>
+                                    {{ form_label(form.plainPassword.second, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                    {{ form_widget(form.plainPassword.second, {
+                                        'attr': {
+                                            'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500',
+                                            'autocomplete': 'new-password'
+                                        }
+                                    }) }}
+                                    {{ form_errors(form.plainPassword.second, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Adresse -->
+                    <div class="mb-8">
+                        <h3 class="font-semibold text-gray-700 border-b pb-2 mb-4">Adresse</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                {{ form_label(form.address1, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.address1, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.address1, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+                            <div class="md:col-span-2">
+                                {{ form_label(form.address2, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.address2, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.address2, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+                            <div>
+                                {{ form_label(form.zipCode, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.zipCode, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.zipCode, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+                            <div>
+                                {{ form_label(form.city, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.city, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.city, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end pt-4 border-t">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
