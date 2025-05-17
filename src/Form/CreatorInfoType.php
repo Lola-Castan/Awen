@@ -6,8 +6,11 @@ use App\Entity\Embeddable\CreatorInfo;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Image;
 
 class CreatorInfoType extends AbstractType
 {
@@ -37,14 +40,34 @@ class CreatorInfoType extends AbstractType
             ->add('pinterestProfile', TextType::class, [
             'label' => 'Profil Pinterest',
             'required' => false,
+            ])            ->add('practicalInfos', TextareaType::class, [
+                'label' => 'Informations pratiques',
+                'required' => false,
             ])
-            ->add('practicalInfos', TextareaType::class, [
-            'label' => 'Informations pratiques',
-            'required' => false,
+            ->add('deleteCoverImage', HiddenType::class, [
+                'mapped' => false,
+                'required' => false,
             ])
-            ->add('coverImage', TextType::class, [
-            'label' => 'Image de couverture',
-            'required' => false,
+            ->add('coverImage', FileType::class, [
+                'label' => 'Image de couverture',
+                'required' => false,
+                'mapped' => false,
+                'constraints' => [
+                    new Image([
+                        'maxSize' => '5M',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/webp'
+                        ],
+                        'mimeTypesMessage' => 'Veuillez uploader une image valide (JPG, PNG ou WEBP)',
+                    ])
+                ],
+                'attr' => [
+                    'accept' => 'image/jpeg,image/png,image/webp',
+                    'class' => 'hidden',
+                    'data-preview-target' => 'coverImagePreview'
+                ]
             ]);
     }
 

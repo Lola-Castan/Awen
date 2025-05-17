@@ -94,6 +94,11 @@ class ProfileController extends AbstractController
         if (!$user) {
             throw $this->createNotFoundException('Utilisateur non trouvé');
         }
+
+        // Si l'utilisateur est un créateur, rediriger vers son profil créateur
+        if ($user->isCreator()) {
+            return $this->redirectToRoute('creator_show', ['id' => $user->getId()]);
+        }
         
         // Récupérer les posts publiés de l'utilisateur
         $posts = $postRepository->findBy(
