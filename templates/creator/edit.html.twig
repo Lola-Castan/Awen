@@ -2,6 +2,164 @@
 
 {% block title %}Modifier mon profil créateur{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}    <style>
+        /* Style du conteneur principal */
+        .select2-container--default .select2-selection--multiple {
+            background-color: white;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            min-height: 38px;
+            padding: 2px;
+        }
+
+        /* Style des tags */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: #e5e7eb;
+            border: none !important;
+            border-radius: 0.375rem;
+            margin: 3px;
+            padding: 2px 6px 2px 25px;
+            font-size: 0.875rem;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        /* Style du texte dans les tags */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+            padding: 0;
+            cursor: default;
+            user-select: none;
+        }
+
+        /* Style du bouton de suppression */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            border-radius: 50%;
+            border: none !important;
+            background: none;
+            color: #6b7280;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 0 4px;
+            margin: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        /* Hover sur le bouton de suppression */
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background-color: #d1d5db;
+            color: #374151;
+        }
+
+        /* Style de la zone de recherche */
+        .select2-container--default .select2-selection--multiple .select2-search--inline {
+            margin: 3px;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+            margin: 0;
+            padding: 0 6px;
+            height: 28px;
+            min-width: 150px;
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Initialisation de Select2
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof $ !== 'undefined') {
+                $('#{{ form.categories.vars.id }}').select2({
+                    theme: 'default',
+                    width: '100%',
+                    placeholder: 'Rechercher des catégories...',
+                    allowClear: true,
+                    multiple: true,
+                    language: 'fr',
+                    closeOnSelect: false
+                });
+            }
+        });
+
+        // Code de image-preview.js directement ici
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.querySelector('input[type="file"]');
+            const imagePreview = document.querySelector('.image-preview');
+            const placeholder = document.querySelector('.image-preview-placeholder');
+            const uploadStatus = document.querySelector('.upload-status');
+            const deleteButton = document.querySelector('.delete-image-btn');
+            const deleteInput = document.querySelector('.delete-image-input');
+
+            if (fileInput) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            imagePreview.src = e.target.result;
+                            imagePreview.classList.remove('hidden');
+                            placeholder.classList.add('hidden');
+                            uploadStatus.classList.remove('hidden');
+                        }
+                        reader.readAsDataURL(this.files[0]);
+                    }
+                });
+            }
+
+            if (deleteButton && deleteInput) {
+                deleteButton.addEventListener('click', function() {
+                    deleteInput.checked = true;
+                    imagePreview.src = '';
+                    imagePreview.classList.add('hidden');
+                    placeholder.classList.remove('hidden');
+                    if (fileInput) fileInput.value = '';
+                });
+            }
+        });
+
+        // Code de tabs.js directement ici
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            function switchTab(tabId) {
+                tabContents.forEach(content => {
+                    content.classList.add('hidden');
+                });
+
+                tabButtons.forEach(button => {
+                    button.classList.remove('border-primary', 'text-primary');
+                    button.classList.add('border-transparent', 'text-gray-500');
+                });
+
+                const selectedContent = document.getElementById(tabId + '-content');
+                if (selectedContent) {
+                    selectedContent.classList.remove('hidden');
+                }
+
+                const selectedButton = document.querySelector(`[data-tab="${tabId}"]`);
+                if (selectedButton) {
+                    selectedButton.classList.remove('border-transparent', 'text-gray-500');
+                    selectedButton.classList.add('border-primary', 'text-primary');
+                }
+            }
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const tabId = button.getAttribute('data-tab');
+                    switchTab(tabId);
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white shadow-xl rounded-lg overflow-hidden">
@@ -73,6 +231,18 @@
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
                                 {{ form_widget(form.pinterestProfile, {'attr': {'class': 'max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md'}}) }}
                                 {{ form_errors(form.pinterestProfile) }}
+                            </div>
+                        </div>
+
+                        {# Catégories #}
+                        <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start">
+                            <label for="{{ form.categories.vars.id }}" class="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">
+                                {{ form_label(form.categories) }}
+                            </label>
+                            <div class="mt-1 sm:mt-0 sm:col-span-2">
+                                {{ form_widget(form.categories, {'attr': {'class': 'max-w-lg block w-full shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:max-w-xs sm:text-sm border-gray-300 rounded-md select2'}}) }}
+                                {{ form_errors(form.categories) }}
+                                <p class="mt-2 text-sm text-gray-500">Sélectionnez les catégories qui correspondent à vos créations.</p>
                             </div>
                         </div>
 
@@ -154,10 +324,4 @@
             </div>
         </div>
     </div>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="{{ asset('build/image-preview.js') }}"></script>
-    <script src="{{ asset('build/tabs.js') }}"></script>
 {% endblock %}

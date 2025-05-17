@@ -49,10 +49,23 @@ class CreatorController extends AbstractController
         }
 
         $form = $this->createForm(CreatorInfoType::class, $creator->getCreatorInfo());
-        $form->handleRequest($request);        if ($form->isSubmitted() && $form->isValid()) {
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile|null $coverImageFile */
             $coverImageFile = $form->get('coverImage')->getData();
             $deleteCoverImage = $form->get('deleteCoverImage')->getData();
+
+            // Gestion des catégories
+            $newCategories = $form->get('categories')->getData();
+            // Supprimer toutes les anciennes catégories
+            foreach ($creator->getCategories() as $category) {
+                $creator->removeCategory($category);
+            }
+            // Ajouter les nouvelles catégories sélectionnées
+            foreach ($newCategories as $category) {
+                $creator->addCategory($category);
+            }
 
             if ($deleteCoverImage) {
                 $oldImage = $creator->getCreatorInfo()->getCoverImage();
