@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil{% endblock %}
+
+{% block body %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center mb-6">
+            <a href="{{ path('profile_show', {'username': app.user.username}) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+                </svg>
+                Retour à mon profil
+            </a>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold text-gray-800 mb-6">Modifier mon profil</h1>
+
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <div class="mb-6">
+                                {% if app.user.profilePicture %}
+                                    <div class="mb-4">
+                                        <p class="text-sm text-gray-600 mb-2">Photo actuelle :</p>
+                                        <img src="{{ asset('uploads/profile_pictures/' ~ app.user.profilePicture) }}" 
+                                            alt="{{ app.user.username }}" 
+                                            class="w-32 h-32 rounded-full object-cover border-2 border-gray-200">
+                                    </div>
+                                {% endif %}
+
+                                {{ form_label(form.profilePictureFile, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.profilePictureFile, {'attr': {'class': 'block w-full text-gray-700 border border-gray-300 rounded py-2 px-3 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_help(form.profilePictureFile, {'attr': {'class': 'text-xs text-gray-500 mt-1'}}) }}
+                                {{ form_errors(form.profilePictureFile, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+
+                            <div class="mb-6">
+                                {{ form_label(form.firstName, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.firstName, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.firstName, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+
+                            <div class="mb-6">
+                                {{ form_label(form.lastName, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.lastName, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500'}}) }}
+                                {{ form_errors(form.lastName, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="mb-6">
+                                {{ form_label(form.bio, null, {'label_attr': {'class': 'block text-gray-700 text-sm font-bold mb-2'}}) }}
+                                {{ form_widget(form.bio, {'attr': {'class': 'appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:border-indigo-500 h-40'}}) }}
+                                {{ form_errors(form.bio, {'attr': {'class': 'text-red-500 text-xs italic mt-1'}}) }}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline">
+                            Enregistrer les modifications
+                        </button>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

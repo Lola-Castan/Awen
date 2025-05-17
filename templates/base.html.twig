@@ -55,7 +55,7 @@
                         <a href="{{ path('creators') }}" class="text-gray-700 hover:text-primary transition-colors">Créateurs</a>
                         <a href="{{ path('products') }}" class="text-gray-700 hover:text-primary transition-colors">Produits</a>
                         <a href="{{ path('app_event_index') }}" class="text-gray-700 hover:text-primary transition-colors">Événements</a>
-                        <a href="{{ path('app_post_index') }}" class="text-gray-700 hover:text-primary transition-colors">Posts</a>
+                        <a href="{{ path('post_index') }}" class="text-gray-700 hover:text-primary transition-colors">Posts</a>
                         <a href="#" class="text-gray-700 hover:text-primary transition-colors">À propos</a>
                     </div>
                     
@@ -63,8 +63,7 @@
                     <div class="flex items-center space-x-4">
                         <!-- User Menu -->
                         <div class="hidden md:flex items-center space-x-4">
-                            {% if app.user %}
-                                <div class="relative">
+                            {% if app.user %}                                <div class="relative">
                                     <button id="user-menu-button" type="button" class="flex items-center text-gray-700 hover:text-primary focus:outline-none">
                                         <span class="mr-2">{{ app.user.firstName }}</span>
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -72,9 +71,9 @@
                                         </svg>
                                     </button>
                                     <div id="user-dropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 hidden">
-                                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mon profil</a>
+                                        <a href="{{ path('profile_show', {username: app.user.userIdentifier}) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mon profil</a>
                                         {% if is_granted('ROLE_CREATOR') %}
-                                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes produits</a>
+                                            <a href="{{ path('profile_show', {username: app.user.userIdentifier}) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mes produits</a>
                                         {% endif %}
                                         <a href="{{ path('logout') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Déconnexion</a>
                                     </div>
@@ -100,14 +99,13 @@
                     <a href="{{ path('creators') }}" class="block py-2 text-gray-700 hover:text-primary">Créateurs</a>
                     <a href="{{ path('products') }}" class="block py-2 text-gray-700 hover:text-primary">Produits</a>
                     <a href="{{ path('app_event_index') }}" class="block py-2 text-gray-700 hover:text-primary">Événements</a>
-                    <a href="{{ path('app_post_index') }}" class="block py-2 text-gray-700 hover:text-primary">Posts</a>
+                    <a href="{{ path('post_index') }}" class="block py-2 text-gray-700 hover:text-primary">Posts</a>
                     <a href="#" class="block py-2 text-gray-700 hover:text-primary">À propos</a>
-                    
-                    {% if app.user %}
+                      {% if app.user %}
                         <hr class="my-2 border-gray-200">
-                        <a href="#" class="block py-2 text-gray-700 hover:text-primary">Mon profil</a>
+                        <a href="{{ path('profile_show', {username: app.user.userIdentifier}) }}" class="block py-2 text-gray-700 hover:text-primary">Mon profil</a>
                         {% if is_granted('ROLE_CREATOR') %}
-                            <a href="#" class="block py-2 text-gray-700 hover:text-primary">Mes produits</a>
+                            <a href="{{ path('profile_show', {username: app.user.userIdentifier}) }}" class="block py-2 text-gray-700 hover:text-primary">Mes produits</a>
                         {% endif %}
                         <a href="{{ path('logout') }}" class="block py-2 text-gray-700 hover:text-primary">Déconnexion</a>
                     {% else %}
@@ -148,7 +146,7 @@
                             <li><a href="{{ path('creators') }}" class="text-gray-600 hover:text-primary">Créateurs</a></li>
                             <li><a href="{{ path('products') }}" class="text-gray-600 hover:text-primary">Produits</a></li>
                             <li><a href="{{ path('app_event_index') }}" class="text-gray-600 hover:text-primary">Événements</a></li>
-                            <li><a href="{{ path('app_post_index') }}" class="text-gray-600 hover:text-primary">Posts</a></li>
+                            <li><a href="{{ path('post_index') }}" class="text-gray-600 hover:text-primary">Posts</a></li>
                             <li><a href="#" class="text-gray-600 hover:text-primary">À propos</a></li>
                         </ul>
                     </div>
